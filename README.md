@@ -32,14 +32,21 @@ A real towel-folding skill that runs on two physical AgileX Piper arms, end to e
 
 > In one continuous recorded experiment, the system completed **10 trials and succeeded 10 times (10/10 consecutive trials)**.
 
-| Trial | Video timestamps | Final success | Manual reset |
-|---|---|---|---|
-| 01 – 10 | see `results/consecutive_10_trials.csv` | backfilled from footage | backfilled |
+| Item | Value |
+|---|---|
+| Recording | one continuous take, no internal cuts |
+| Trial span | 1.5 – 314.0 s (≈34 s per trial) |
+| Trials completed / succeeded | 10 / 10 |
+| Manual reset | yes — before every trial the operator repositions the towel |
+| Timing precision | ±0.5 s |
+| Checkpoint | 040000 |
+| Per-stage outcome | approach · left/right grasp · lift · fold · release all visible and successful in every trial |
 
-- Full 10-trial continuous video (untrimmed, Trial 01–10 labeled): **link to be added** (stays out of git; see Downloads).
-- Technical analysis video (60–90 s, stage-marked, with real failures): `docs/video-script.md`.
+Per-trial timestamps and stage flags: `results/consecutive_10_trials.csv` · full frame-by-frame review: `results/consecutive_10_trials_review.md`
 
-**Reporting rule:** we write *10/10 consecutive trials*, never "99%" or "100% success". A single continuous take is more credible than an aggregated percentage.
+**Honest boundary:** after trial 10 a reset begins at ~314.5 s and an 11th attempt starts ~320 s, but the recording ends (339.8 s) before its outcome could be verified — that attempt is **not** counted. The source has no `Trial NN` overlay; timestamps come from a frame-by-frame review.
+
+**Reporting rule:** we write *10/10 consecutive trials* for this recording only, never a general "99%" or "100% success rate".
 
 ---
 

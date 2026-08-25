@@ -74,3 +74,6 @@ Thumbs.db
 
 # Local config overrides
 configs/*.local.yaml
+
+# Internal working docs (not for public release; contain local machine paths)
+docs/VIDEO_HANDOFF.md
