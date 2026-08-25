@@ -12,6 +12,33 @@
 - 数据格式为 LeRobot 数据集（`datasets/*` 目录结构 + `meta/info.json`）。
 - 采样器 `EpisodeAwareSampler` 按 episode 边界组织训练样本，避免跨 episode 拼接。
 
+### 采集命令（参考运行）
+
+用 LeRobot 的 `lerobot-record`，机器人类型为 `piper_dual`（须先跑
+`scripts/setup_piper_dual.sh`）：
+
+```bash
+lerobot-record \
+  --robot.type=piper_dual \
+  --robot.left_port="${ROBOT_LEFT_CAN:-can1}" \
+  --robot.right_port="${ROBOT_RIGHT_CAN:-can0}" \
+  --robot.id=piper_towel \
+  --robot.cameras="{
+    left:   {type: opencv, index_or_path: /dev/camera_left,   width: 640, height: 480, fps: 30},
+    middle: {type: opencv, index_or_path: /dev/camera_middle, width: 640, height: 480, fps: 30},
+    right:  {type: opencv, index_or_path: /dev/camera_right,  width: 640, height: 480, fps: 30}}" \
+  --dataset.repo_id="${DATASET_REPO_ID:-local/towel_fold_dataset}" \
+  --dataset.num_episodes=30 \
+  --dataset.single_task="Fold the towel with both Piper arms." \
+  --display_data=true
+```
+
+- 遥操作：操作员拉动 leader（master）臂，follower 跟随。leader 侧驱动是参考 fork
+  的 `lerobot/teleoperators/piper/`（本仓库审计材料不含该目录），`--teleop.type`
+  的确切取值**待确认**；`lerobot_piper/motors/piper/piper_master.py` 是读 leader
+  控制帧的只读总线实现，可作为移植参考。
+- episode 数 / 时长请按你的任务调整；`num_episodes=30` 只是示例，不代表参考数据集。
+
 ## 2. 观测 / 动作定义
 
 | 字段 | 维度 | 内容 |
@@ -38,6 +65,7 @@
 
 ## 5. 待确认项
 
-- 数据集 episode 总数、每 episode 时长、总时长：**待确认**（原始数据集未随审计样本提供，仓库不回填伪造数字）。
+- 数据集 episode 总数、每 episode 时长、总时长：**待确认**（原始数据集在采集主机上，`meta/info.json` 尚未导出；拿到后即可回填）。
+- leader 遥操作的 `--teleop.type` 确切取值：**待确认**（参考 fork 的 `teleoperators/piper` 不在审计材料内）。
 - 数据增强：参考运行 `image_transforms.enable=false`（关闭），若后续开启需重新评测。
 - 是否包含「失败 / 中断」demo 作为负样本：**待确认**。

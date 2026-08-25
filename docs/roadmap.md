@@ -40,4 +40,4 @@
 ## 5. 诚实边界
 
 - 当前可对外声明的只有「连续 10 次录像证据」；≥20 次统计、鲁棒性、基线对比均**待确认**，未做实验不写结论。
-- 040000 checkpoint 的完整配置、GPU 规格、episode 总数等**待确认**项见各 doc。
+- 040000 checkpoint 的完整配置已确认（与 030000 一致，`pretrained_path=030000`，见 [training.md](training.md)）；GPU 规格、episode 总数等仍**待确认**，见各 doc。

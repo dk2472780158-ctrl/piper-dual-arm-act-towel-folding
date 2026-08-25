@@ -49,12 +49,17 @@ lerobot-train --config configs/train_example.yaml \
 
 - 训练产出 LeRobot `pretrained_model` 目录（`model.safetensors` + `config.json`）。
 - 参考部署使用 `checkpoint 040000`；审计到 `030000` 的配置并存有 4 份 JSON。
+- **040000 的 `config.json` 已核对**（2026-08 从部署主机导出）：架构与 030000
+  完全一致（chunk 100 / exec 50、ResNet18、dim 512、VAE 32、kl 10.0、
+  optimizer_lr 1e-05、weight_decay 1e-04、lr_backbone 1e-05），且其
+  `pretrained_path` 指向 `.../030000/pretrained_model` —— 即 **040000 是从
+  030000 继续训练出来的**。本节的架构与超参数表同时覆盖两个 checkpoint。
 - 权重文件**不入库**，提供独立下载说明（见 README「下载」一节）。
 
 ## 6. 待确认项
 
-- 040000 检查点的完整训练配置是否与 030000 完全一致：**待确认**（审计材料含 030000 的 4 份 JSON，040000 的 config 未逐份核对）。
-- GPU 型号 / 显存 / 单步耗时 / 训练墙钟时间：**待确认**（审计材料未含日志）。
+- GPU 型号 / 显存 / 单步耗时 / 训练墙钟时间：**待确认**（审计材料未含日志；部署主机
+  `nvidia-smi` 头部为 Driver 595.84 / CUDA 13.2，型号行未记录）。
 - 是否进行过消融 / 对照实验：**待确认**。
 
 ## 7. 复现要点

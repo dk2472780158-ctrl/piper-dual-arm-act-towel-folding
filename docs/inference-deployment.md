@@ -4,6 +4,11 @@
 
 ## 1. 异步 gRPC 部署（参考运行）
 
+> **前置**：`run_act.sh --client` 需要 `--robot.type=piper_dual` 能解析。
+> 先跑一次 `./scripts/setup_piper_dual.sh` 把 piper_dual 装进你的 LeRobot
+> （见 [lerobot_piper/README.md](../lerobot_piper/README.md)），再用
+> `check_environment.sh` 确认已注册。
+
 镜像审计到的部署脚本 `act_inference_towel_client.sh`：
 
 ```
@@ -86,3 +91,7 @@ robot_client（CPU，相机 + CAN 关节，30 Hz 控制环）
 
 - 040000 与 030000 检查点的推理延迟差异：**待确认**（无延迟日志）。
 - gRPC 批量 / 吞吐上限：**待确认**。
+
+> 已确认（2026-08）：部署所用 040000 的 `config.json` 中 `pretrained_path` 指向
+> `.../030000/pretrained_model`，即 040000 是 030000 的续训结果；两者架构参数一致
+> （见 [training.md](training.md)）。

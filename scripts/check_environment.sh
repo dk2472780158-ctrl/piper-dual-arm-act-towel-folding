@@ -35,6 +35,18 @@ for pkg in torch lerobot piper_sdk numpy opencv-python; do
   fi
 done
 
+say "lerobot piper_dual type"
+if python -c "
+import lerobot.robots.piper_dual  # noqa: F401  (registers PIPERDualConfig)
+from lerobot.robots.config import RobotConfig
+assert 'piper_dual' in RobotConfig.get_known_choices(), 'not registered'
+" >/dev/null 2>&1; then
+  ok "piper_dual registered — run_act.sh --client will resolve --robot.type=piper_dual"
+else
+  warnf "piper_dual not registered — run ./scripts/setup_piper_dual.sh"
+  warn=$((warn+1))
+fi
+
 say "CUDA"
 if python -c "import torch; assert torch.cuda.is_available()" >/dev/null 2>&1; then
   ok "cuda $(python -c 'import torch; print(torch.version.cuda)')"

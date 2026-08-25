@@ -83,27 +83,117 @@ ACT（Action Chunking Transformer）· LeRobot · gRPC 异步推理 · 30 Hz 实
 ## 仓库结构
 
 ```
-assets/   架构图（+ Hero GIF 占位）
+assets/   架构图 + Hero GIF
 configs/  训练 / 评测 / 机器人示例配置
-docs/     架构 · 数据采集 · 训练 · 部署 · 安全系统 · 评测 · 复现 · 工程化 · 路线图
+docs/     架构 · 数据采集 · 训练 · 部署 · 安全系统 · 环境准备 · 复现 · 工程化 · 路线图
+lerobot_piper/   piper_dual 机器人类型的 LeRobot 模块（从参考 fork 原样 vendored）
 results/  仅回填模板（evaluation_summary.json / trial_results.csv /
           latency_results.csv / consecutive_10_trials.csv）
-scripts/  训练 · 评测 · 部署 · dry-run · 环境检查
+scripts/  setup_piper_dual · 训练 · 评测 · 部署 · dry-run · 环境检查
 src/      safety.py（纯 numpy 校验器）· reset_pose · eval_rollout · piper 驱动
 tests/    安全行为 / 动作形状 / 配置契约 / checkpoint 加载
 ```
 
-## 快速开始
+## 快速开始（无需硬件）
 
 ```bash
 pip install -e ".[dev]"
 
 ./scripts/check_environment.sh     # 依赖 / CUDA / CAN / 相机 / checkpoint
-./scripts/dry_run.sh               # 全流程 dry-run，不动作
 python -m pytest tests/ -q         # 安全层 + 配置单测
 ```
 
-真实执行**永远不是默认**：需要 `--execute` + 键入 `EXECUTE` + 显式 `--max-steps` 预算。详见 `docs/inference-deployment.md` 与 `docs/safety-system.md`。
+`check_environment.sh` 与 `pytest` 不需要机器人、不需要 CAN 总线、不需要 checkpoint。
+`dry_run.sh` 额外需要 `POLICY_CHECKPOINT` 指向导出的 `pretrained_model/` 目录（它要
+证明 ACT 策略能加载、整条链路已接好），但同样不动作：
+
+```bash
+POLICY_CHECKPOINT=/path/to/pretrained_model ./scripts/dry_run.sh
+```
+
+真实执行**永远不是默认**：需要 `--execute` + 键入 `EXECUTE` + 显式 `--max-steps` 预算。
+详见 `docs/inference-deployment.md` 与 `docs/safety-system.md`。
+
+## 环境（硬件）
+
+| 部件 | 规格 | 说明 |
+|---|---|---|
+| 双臂 | 2 × AgileX Piper（六自由度 + 夹爪） | 左臂 `can1`，右臂 `can0` |
+| 相机 | 3 × 640×480 @ 30 fps | `/dev/camera_{left,middle,right}` udev 符号链接 |
+| 主机 | Ubuntu + NVIDIA GPU | 训练 + CUDA 推理 |
+| 驱动 / CUDA | 595.84 / 13.2（已确认） | 显卡型号待确认 |
+
+```bash
+# 每台机器一次：把 piper_dual 机器人类型装进 LeRobot
+./scripts/setup_piper_dual.sh
+```
+
+CAN / udev / 相机 / piper-sdk 的完整细节（序列号已脱敏）：`docs/environment-setup.md`。
+
+## 端到端流程（本仓库复现的完整闭环）
+
+**1. 采集** —— 操作员遥操作 leader 臂；`lerobot-record` 写入 LeRobot episodes
+（parquet + mp4）。见 `docs/data-collection.md`：
+
+```bash
+lerobot-record --robot.type=piper_dual --robot.left_port=can1 --robot.right_port=can0 \
+  --robot.cameras="{left: {type: opencv, index_or_path: /dev/camera_left, width: 640, height: 480, fps: 30}, \
+    middle: {type: opencv, index_or_path: /dev/camera_middle, width: 640, height: 480, fps: 30}, \
+    right: {type: opencv, index_or_path: /dev/camera_right, width: 640, height: 480, fps: 30}}" \
+  --dataset.repo_id=local/towel_fold_dataset --dataset.num_episodes=30 \
+  --dataset.single_task="Fold the towel with both Piper arms."
+```
+
+**2. 训练** —— `lerobot-train` + ACT（chunk 100、ResNet18、VAE 32、kl 10.0）。见 `docs/training.md`：
+
+```bash
+DATASET_ROOT="$DATASET_ROOT" ./scripts/train_act.sh
+```
+
+**3. 部署** —— 异步 gRPC：`policy_server`（CUDA）持有模型，`robot_client`（CPU）以
+30 Hz 驱动双臂。见 `docs/inference-deployment.md`：
+
+```bash
+./scripts/run_act.sh --server      # 终端 A：gRPC 策略服务
+./scripts/run_act.sh --client      # 终端 B：机器人 + 相机，30 Hz 控制环
+```
+
+**4. 评测** —— `results/` 模板从真实录像回填（见下）。参考结果是单次连续拍摄的 10/10。
+
+## 复现清单
+
+- [ ] `./scripts/setup_piper_dual.sh` → `piper_dual` 注册成功
+- [ ] `./scripts/check_environment.sh` → 所有硬性依赖通过
+- [ ] `./scripts/dry_run.sh` → 全流程 dry-run 通过，无动作
+- [ ] `python -m pytest tests/ -q` → 全绿
+- [ ] CAN `can0`/`can1` 已 up；`/dev/camera_*` 符号链接可解析
+- [ ] `POLICY_CHECKPOINT` 指向导出的 `pretrained_model/` 目录
+- [ ] 双臂复位到训练起点（`piper-towel-reset`）
+- [ ] `./scripts/run_act.sh --server` + `--client`（或 `evaluate_act.sh --execute`）
+
+任何未经审计日志确认的项一律标注 **待确认**，不编造数据。
+
+## 常见问题
+
+**为什么用「10/10 consecutive trials」而不是成功率？** 一次连续、无内部剪辑、每次复位
+都可见的录制，比聚合成功率更可信，也无法靠挑片段注水。逐帧审阅全文见
+`results/consecutive_10_trials_review.md`。
+
+**权重和数据在哪里？** 不入库——仓库只给导出 / 安装说明与必须由真实运行回填的结果
+模板（`docs/reproducibility.md`）。GitHub 放代码，不放几百 MB 的权重。
+
+**必须要 GPU 吗？** 只有训练和 CUDA 推理需要。安全层、配置契约测试与 dry-run 都能
+在 CPU 上跑。
+
+**用这个仓库必须依赖原始 ACT 项目吗？** 不用。`lerobot_piper/` + `scripts/setup_piper_dual.sh`
+就能让标准 LeRobot 安装识别 `piper_dual`。本仓库独立成站，原始项目不会被修改。
+
+**相机序列号会公开吗？** 不会——设备序列号属隐私且因机器而异。文档用占位符，
+你自己填自己的（`docs/environment-setup.md`）。
+
+**有没有可能未经确认就给机械臂发指令？** 没有。真实执行需要 `--execute` + 键入
+`EXECUTE` + 显式 `--max-steps` 预算；且 Ctrl+C 后机械臂保持 ENABLED 不自动下电，
+防止负载坠落。
 
 ## 下载（数据与权重——不入库）
 

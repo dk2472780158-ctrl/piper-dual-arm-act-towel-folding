@@ -81,28 +81,129 @@ The safety layer runs on **every** control step: start-pose validation (0.15 rad
 ## Repository layout
 
 ```
-assets/   architecture.svg (+ hero GIF placeholder)
+assets/   architecture.svg + hero GIF
 configs/  training / eval / robot example configs
 docs/     architecture · data collection · training · deployment ·
-          safety system · evaluation · reproducibility · engineering · roadmap
+          safety system · environment setup · reproducibility · engineering · roadmap
+lerobot_piper/  the `piper_dual` LeRobot robot type (vendored from the reference fork)
 results/  backfill-only templates (evaluation_summary.json, trial_results.csv,
           latency_results.csv, consecutive_10_trials.csv)
-scripts/  train · evaluate · run_act · dry_run · check_environment
+scripts/  setup_piper_dual · train · evaluate · run_act · dry_run · check_environment
 src/      safety.py (pure-numpy validators) · reset_pose · eval_rollout · piper drivers
 tests/    safety behavior, action-shape, config-contract, checkpoint-load
 ```
 
-## Getting started
+## Getting started (no hardware needed)
 
 ```bash
 pip install -e ".[dev]"
 
 ./scripts/check_environment.sh     # deps / CUDA / CAN / cameras / checkpoint
-./scripts/dry_run.sh               # full dry-run, no motion
 python -m pytest tests/ -q         # safety + config unit tests
 ```
 
-Real execution is **never the default**: it requires `--execute`, typing `EXECUTE`, and an explicit `--max-steps` budget. See `docs/inference-deployment.md` and `docs/safety-system.md`.
+`check_environment.sh` and `pytest` need no robot, no CAN bus and no checkpoint.
+`dry_run.sh` additionally needs `POLICY_CHECKPOINT` pointing at an exported
+`pretrained_model/` dir (it proves the ACT policy loads and the whole stack is
+wired), but still moves nothing:
+
+```bash
+POLICY_CHECKPOINT=/path/to/pretrained_model ./scripts/dry_run.sh
+```
+
+Real execution is **never the default**: it requires `--execute`, typing
+`EXECUTE`, and an explicit `--max-steps` budget. See
+`docs/inference-deployment.md` and `docs/safety-system.md`.
+
+## Environment (hardware)
+
+| Component | Spec | Notes |
+|---|---|---|
+| Arms | 2 × AgileX Piper (6-DoF + gripper) | left on `can1`, right on `can0` |
+| Cameras | 3 × 640×480 @ 30 fps | `/dev/camera_{left,middle,right}` udev symlinks |
+| Host | Ubuntu + NVIDIA GPU | training + CUDA inference |
+| Driver / CUDA | 595.84 / 13.2 (confirmed) | GPU model TBC |
+
+```bash
+# one-time, per machine: install the piper_dual robot type into LeRobot
+./scripts/setup_piper_dual.sh
+```
+
+Full CAN / udev / camera / piper-sdk details (serial numbers sanitized):
+`docs/environment-setup.md`.
+
+## End-to-end pipeline (the full loop this repo reproduces)
+
+**1. Collect** — teleoperate the leader arms; `lerobot-record` writes LeRobot
+episodes (parquet + mp4). See `docs/data-collection.md`:
+
+```bash
+lerobot-record --robot.type=piper_dual --robot.left_port=can1 --robot.right_port=can0 \
+  --robot.cameras="{left: {type: opencv, index_or_path: /dev/camera_left, width: 640, height: 480, fps: 30}, \
+    middle: {type: opencv, index_or_path: /dev/camera_middle, width: 640, height: 480, fps: 30}, \
+    right: {type: opencv, index_or_path: /dev/camera_right, width: 640, height: 480, fps: 30}}" \
+  --dataset.repo_id=local/towel_fold_dataset --dataset.num_episodes=30 \
+  --dataset.single_task="Fold the towel with both Piper arms."
+```
+
+**2. Train** — `lerobot-train` with ACT (chunk 100, ResNet18, VAE 32, kl 10.0). See `docs/training.md`:
+
+```bash
+DATASET_ROOT="$DATASET_ROOT" ./scripts/train_act.sh
+```
+
+**3. Deploy** — async gRPC: `policy_server` (CUDA) holds the model,
+`robot_client` (CPU) drives the arms at 30 Hz. See `docs/inference-deployment.md`:
+
+```bash
+./scripts/run_act.sh --server      # terminal A: gRPC policy server
+./scripts/run_act.sh --client      # terminal B: robot + cameras, 30 Hz loop
+```
+
+**4. Evaluate** — `results/` templates are backfilled from a real recorded run
+(see below). The reference result is a single continuous 10/10 take.
+
+## Reproduction checklist
+
+- [ ] `./scripts/setup_piper_dual.sh` → `piper_dual` registered
+- [ ] `./scripts/check_environment.sh` → all hard requirements OK
+- [ ] `./scripts/dry_run.sh` → full pipeline dry-run passes, no motion
+- [ ] `python -m pytest tests/ -q` → all green
+- [ ] CAN `can0`/`can1` up; `/dev/camera_*` symlinks resolve
+- [ ] `POLICY_CHECKPOINT` set to an exported `pretrained_model/` dir
+- [ ] arms reset to the training start pose (`piper-towel-reset`)
+- [ ] `./scripts/run_act.sh --server` + `--client` (or `evaluate_act.sh --execute`)
+
+Anything not yet confirmable from an audited log is marked **待确认 (TBC)** in
+`docs/` — nothing is fabricated.
+
+## FAQ
+
+**Why "10/10 consecutive trials" instead of a success rate?** One continuous,
+internally-unedited recording with every reset visible is more credible than an
+aggregated percentage, and it cannot be inflated by cherry-picking. The full
+frame-by-frame review is in `results/consecutive_10_trials_review.md`.
+
+**Where are the weights and the dataset?** Not in git — the repo ships
+export/install instructions and result templates that must be backfilled from a
+real run (`docs/reproducibility.md`). GitHub is for code, not hundreds of MB of
+weights.
+
+**Is a GPU required?** Only for training and CUDA inference. The safety layer,
+config-contract tests and dry-run all run on CPU.
+
+**Do I need the original ACT project to use this?** No. `lerobot_piper/` +
+`scripts/setup_piper_dual.sh` make a stock LeRobot install understand
+`piper_dual`. This repo is standalone; the original project is never modified.
+
+**Are the camera serial numbers published?** No — device serials are privacy
+sensitive and machine-specific. Docs use placeholders; you fill in yours
+(`docs/environment-setup.md`).
+
+**Is anything ever sent to the arms without explicit confirmation?** No.
+Real execution requires `--execute` + typing `EXECUTE` + an explicit
+`--max-steps` budget, and the arms stay ENABLED after Ctrl+C (never
+auto-disabled, to prevent dropping the load).
 
 ## Downloads (data & weights — never in git)
 
