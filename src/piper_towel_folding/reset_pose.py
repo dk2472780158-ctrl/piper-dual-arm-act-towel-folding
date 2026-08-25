@@ -30,27 +30,17 @@ import time
 import numpy as np
 
 from piper_towel_folding.piper.dual_robot import PIPERDual, PIPERDualConfig
+from piper_towel_folding.safety import TRAINING_START_ACTION
 
-# Median of the demonstrated start poses in the reference dataset.
-TRAINING_START_POSE = np.asarray(
-    [
-        0.0492107794,  # left j1
-        0.0,
-        0.0,
-        -0.2287141085,
-        0.2685223222,
-        0.2780382633,
-        0.0,  # left gripper
-        -0.0443961099,  # right j1
-        0.0,
-        0.0,
-        0.0536503866,
-        0.3397218585,
-        -0.0396250561,
-        0.0,  # right gripper
-    ],
-    dtype=np.float64,
-)
+# Canonical training start pose = frame-0 action of the reference dataset
+# (see safety.TRAINING_START_ACTION / lerobot_eval.py's "Dataset frame 0
+# action"). This is the SAME pose that safety.validate_start_pose gates
+# against, so resetting here guarantees the eval start gate passes.
+# The previous "median across demos" start differed from frame-0 by up to
+# ~0.2 rad on several joints (left j6 0.175, right j4 0.202, right j6 0.164)
+# and could trip the 0.15 rad gate even after a correct reset — it was
+# removed so reset and eval cannot disagree.
+TRAINING_START_POSE = TRAINING_START_ACTION.astype(np.float64)
 
 # Nominal command envelope for the target pose.
 SINGLE_ARM_LOWER = np.asarray([-1.61, -0.05, -1.93, -1.58, -1.40, -1.58, 0.0])
@@ -103,7 +93,7 @@ def parse_args() -> argparse.Namespace:
         nargs=14,
         default=None,
         metavar=("LJ1", "LJ2", "LJ3", "LJ4", "LJ5", "LJ6", "LG", "RJ1", "RJ2", "RJ3", "RJ4", "RJ5", "RJ6", "RG"),
-        help="Optional explicit 14-value target. Default is the training median start pose.",
+        help="Optional explicit 14-value target. Default is the training frame-0 start pose.",
     )
     parser.add_argument("--execute", action="store_true", help="Actually move the robot; default is dry-run.")
     return parser.parse_args()

@@ -150,6 +150,22 @@ def test_custom_start_pose_is_used_when_given():
 
 
 # ------------------------------------------------------------------
+# Cross-module contract: reset target == eval start gate reference
+# ------------------------------------------------------------------
+def test_reset_and_eval_share_the_same_start_pose():
+    """reset_pose.py must target exactly what validate_start_pose checks.
+
+    Earlier the reset tool aimed at a "median across demos" pose while the
+    eval gate checked frame-0; they differed by up to ~0.2 rad on four joints
+    (left j6 0.175, right j4 0.202, right j6 0.164), so a correct reset could
+    still trip the 0.15 rad gate. This test locks the two to the same value.
+    """
+    from piper_towel_folding.reset_pose import TRAINING_START_POSE
+
+    np.testing.assert_allclose(TRAINING_START_POSE, TRAINING_START_ACTION, atol=0.0)
+
+
+# ------------------------------------------------------------------
 # RolloutConfig
 # ------------------------------------------------------------------
 def test_rollout_config_defaults_match_documented_limits():

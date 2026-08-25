@@ -68,7 +68,7 @@ robot_client（CPU，相机 + CAN 关节，30 Hz 控制环）
 
 `src/piper_towel_folding/reset_pose.py`：
 
-- 以标称位姿为参照，慢速、走「走廊」路径回到训练起点（`TRAINING_START_POSE`）。
+- 以训练起点为参照，慢速、走「走廊」路径回到训练起点。目标位姿固定为数据集 frame-0 动作（`TRAINING_START_ACTION`），与评测的起点校验使用**同一个**基准，保证复位后必然通过起点门禁。
 - 全程不发送 disable 指令，机械臂保持 ENABLED。
 - 执行前需显式 `--execute` 并确认（`MOVE` 确认提示）。
 
