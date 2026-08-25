@@ -1,8 +1,12 @@
 # 可复现性
 
 目标：拿到本仓库 + 数据 + 权重 + 一套 Piper 硬件，就能复现「连续 10/10」的实验。
-数据与权重计划发布到 Hugging Face（见 [publishing.md](publishing.md)）；**发布前无
-对外下载渠道，外部复现者需要你线下提供数据与权重**，README 里的 HF URL 均为待确认。
+数据与权重**已发布**到 Hugging Face（见 [publishing.md](publishing.md)）：
+
+- 数据集：<https://huggingface.co/datasets/d1112222/towel_fold_dataset_aug_v1>
+- 权重：<https://huggingface.co/d1112222/towel_fold_act_v4_040000>
+
+外部复现者可直接下载，无需线下传输。
 
 ## 1. 环境
 

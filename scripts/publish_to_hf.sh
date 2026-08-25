@@ -20,8 +20,8 @@
 # Usage:
 #   DATASET_SOURCE="$HOME/.cache/huggingface/lerobot/local/towel_fold_dataset_aug_v1" \
 #   MODEL_SOURCE="/path/to/towel_fold_act_v4_scratch60k/checkpoints/040000/pretrained_model" \
-#   HF_DATASET_REPO="dk2472780158-ctrl/towel_fold_dataset_aug_v1" \
-#   HF_MODEL_REPO="dk2472780158-ctrl/towel_fold_act_v4_040000" \
+#   HF_DATASET_REPO="d1112222/towel_fold_dataset_aug_v1" \
+#   HF_MODEL_REPO="d1112222/towel_fold_act_v4_040000" \
 #   HF_TOKEN="hf_..." ./scripts/publish_to_hf.sh --publish
 # ------------------------------------------------------------------
 set -euo pipefail
@@ -30,8 +30,8 @@ cd "$(dirname "$0")/.."
 
 DATASET_SOURCE="${DATASET_SOURCE:-$HOME/.cache/huggingface/lerobot/local/towel_fold_dataset_aug_v1}"
 MODEL_SOURCE="${MODEL_SOURCE:?Set MODEL_SOURCE to the v4 040000 pretrained_model directory}"
-HF_DATASET_REPO="${HF_DATASET_REPO:-dk2472780158-ctrl/towel_fold_dataset_aug_v1}"
-HF_MODEL_REPO="${HF_MODEL_REPO:-dk2472780158-ctrl/towel_fold_act_v4_040000}"
+HF_DATASET_REPO="${HF_DATASET_REPO:-d1112222/towel_fold_dataset_aug_v1}"
+HF_MODEL_REPO="${HF_MODEL_REPO:-d1112222/towel_fold_act_v4_040000}"
 
 echo "Publish plan"
 echo "  dataset source : $DATASET_SOURCE"

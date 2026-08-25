@@ -238,12 +238,11 @@ auto-disabled, to prevent dropping the load).
 
 - **Dataset** (LeRobot episodes, the 120 demos behind the 10/10 video,
   `local/towel_fold_dataset_aug_v1`): export from the collection host — see
-  `docs/reproducibility.md`. A Hugging Face mirror is prepared
-  (`dk2472780158-ctrl/towel_fold_dataset_aug_v1`), URL **待确认 until the
-  owner publishes** — see `docs/publishing.md`.
+  `docs/reproducibility.md`. Published on Hugging Face:
+  <https://huggingface.co/datasets/d1112222/towel_fold_dataset_aug_v1>
 - **Checkpoint** (`pretrained_model/`, v4 040000 = last): export from the
-  training host — set `POLICY_CHECKPOINT`. HF mirror prepared
-  (`dk2472780158-ctrl/towel_fold_act_v4_040000`), URL **待确认**.
+  training host — set `POLICY_CHECKPOINT`. Published:
+  <https://huggingface.co/d1112222/towel_fold_act_v4_040000>
 - **Videos**: GIF/covers/links only in the repo; raw footage stays local.
 
 ## Safety & red lines (verbatim)

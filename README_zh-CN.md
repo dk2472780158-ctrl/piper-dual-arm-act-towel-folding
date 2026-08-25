@@ -225,12 +225,11 @@ DATASET_ROOT="$DATASET_ROOT" ./scripts/train_act.sh
 
 - **数据集**（LeRobot episodes，10/10 视频背后的 120 条 demo，
   `local/towel_fold_dataset_aug_v1`）：由采集主机导出，见
-  `docs/reproducibility.md`。已准备 Hugging Face 镜像
-  （`dk2472780158-ctrl/towel_fold_dataset_aug_v1`），URL **待确认**，发布前见
-  `docs/publishing.md`。
+  `docs/reproducibility.md`。已发布到 Hugging Face：
+  <https://huggingface.co/datasets/d1112222/towel_fold_dataset_aug_v1>
 - **检查点**（`pretrained_model/`，v4 040000 = last）：由训练主机导出，设置
-  `POLICY_CHECKPOINT`。HF 镜像已准备（`dk2472780158-ctrl/towel_fold_act_v4_040000`），
-  URL **待确认**。
+  `POLICY_CHECKPOINT`。已发布：
+  <https://huggingface.co/d1112222/towel_fold_act_v4_040000>
 - **视频**：仓库只放 GIF / 封面 / 链接，原始素材保留在本机。
 
 ## 操作红线（逐字保留）

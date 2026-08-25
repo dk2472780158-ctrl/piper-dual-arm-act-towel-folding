@@ -1,15 +1,20 @@
 # 数据与权重发布（Hugging Face）
 
-> **现状（2026-08）：机制已就绪，尚未实际上传。** 上传需在控制主机执行
-> `scripts/publish_to_hf.sh --publish`，且须先过本页的隐私检查。实际发布前，
-> README / `.env.example` 里的 URL 一律保持**待确认**占位。
+> **现状（2026-08-25）：已发布。**
+>
+> - 数据集：<https://huggingface.co/datasets/d1112222/towel_fold_dataset_aug_v1>
+> - 权重：<https://huggingface.co/d1112222/towel_fold_act_v4_040000>
+>
+> 控制主机无法直连 huggingface.co，经 `hf-mirror.com` 镜像完成上传。
+> 隐私抽检：中相机全时段均匀采样 16 帧，未见人脸；遥操作期操作员手/前臂可能入镜，
+> 已接受。此为采样而非逐帧全审，日后若发现隐私问题可删除仓库（内容公开后不可完全撤回）。
 
 ## 1. 发布什么
 
 | 项 | 源（控制主机） | HF 目标 repo | 说明 |
 |---|---|---|---|
-| 数据集 | `~/.cache/huggingface/lerobot/local/towel_fold_dataset_aug_v1` | `dk2472780158-ctrl/towel_fold_dataset_aug_v1` | **120 条 demo / 85,187 帧 / 30 fps**，10/10 视频模型（v4）的训练集 |
-| 权重 | `.../towel_fold_act_v4_scratch60k/checkpoints/040000/pretrained_model` | `dk2472780158-ctrl/towel_fold_act_v4_040000` | 部署所用 checkpoint 040000（= last），SHA256 `e11823…a4c28c` |
+| 数据集 | `~/.cache/huggingface/lerobot/local/towel_fold_dataset_aug_v1` | `d1112222/towel_fold_dataset_aug_v1` | **120 条 demo / 85,187 帧 / 30 fps**，10/10 视频模型（v4）的训练集 |
+| 权重 | `.../towel_fold_act_v4_scratch60k/checkpoints/040000/pretrained_model` | `d1112222/towel_fold_act_v4_040000` | 部署所用 checkpoint 040000（= last），SHA256 `e11823…a4c28c` |
 
 ## 2. 明确不发布（红线 / 早期实验）
 
@@ -61,9 +66,9 @@ MODEL_SOURCE="/path/to/towel_fold_act_v4_scratch60k/checkpoints/040000/pretraine
 
 ```bash
 # 数据
-huggingface-cli download dk2472780158-ctrl/towel_fold_dataset_aug_v1 --repo-type dataset --local-dir ./towel_fold_dataset_aug_v1
+huggingface-cli download d1112222/towel_fold_dataset_aug_v1 --repo-type dataset --local-dir ./towel_fold_dataset_aug_v1
 # 权重
-huggingface-cli download dk2472780158-ctrl/towel_fold_act_v4_040000 --local-dir ./040000
+huggingface-cli download d1112222/towel_fold_act_v4_040000 --local-dir ./040000
 export POLICY_CHECKPOINT="$(pwd)/040000"
 export DATASET_ROOT="$(pwd)/towel_fold_dataset_aug_v1"
 ```
