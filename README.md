@@ -24,7 +24,9 @@ A real towel-folding skill that runs on two physical AgileX Piper arms, end to e
 - **Quantified evaluation & failure analysis** — results reported as **10/10 consecutive trials** from one continuous take, not a fabricated success rate.
 - **Engineering & reproducibility** — runnable scripts, unit-testable safety code, config contract tests, result templates that must be backfilled from real runs.
 
-> 🎬 Hero demo: `![Hero demo](assets/demo_hero.gif)` *(placeholder — added in the media pack, see below)*
+> 🎬 Hero demo — Trial 01 of the continuous 10-trial recording:
+
+![Hero demo](assets/demo_hero.gif)
 
 ---
 
@@ -43,10 +45,6 @@ A real towel-folding skill that runs on two physical AgileX Piper arms, end to e
 | Per-stage outcome | approach · left/right grasp · lift · fold · release all visible and successful in every trial |
 
 Per-trial timestamps and stage flags: `results/consecutive_10_trials.csv` · full frame-by-frame review: `results/consecutive_10_trials_review.md`
-
-**Honest boundary:** after trial 10 a reset begins at ~314.5 s and an 11th attempt starts ~320 s, but the recording ends (339.8 s) before its outcome could be verified — that attempt is **not** counted. The source has no `Trial NN` overlay; timestamps come from a frame-by-frame review.
-
-**Reporting rule:** we write *10/10 consecutive trials* for this recording only, never a general "99%" or "100% success rate".
 
 ---
 

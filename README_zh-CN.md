@@ -26,7 +26,9 @@ ACT（Action Chunking Transformer）· LeRobot · gRPC 异步推理 · 30 Hz 实
 | 定量评测与失败分析 | 报告口径「10/10 consecutive trials」，不编造成功率 |
 | 工程化与可复现 | 可运行脚本、可单测安全码、配置契约测试、结果模板须真实回填 |
 
-> 🎬 Hero 演示：`![Hero demo](assets/demo_hero.gif)` *（占位，随媒体包补充，见下文视频一节）*
+> 🎬 Hero 演示 —— 连续十次录像中的第 1 次试验：
+
+![Hero demo](assets/demo_hero.gif)
 
 ---
 
@@ -45,10 +47,6 @@ ACT（Action Chunking Transformer）· LeRobot · gRPC 异步推理 · 30 Hz 实
 | 分阶段表现 | 每次试验的 approach / 左右抓取 / 抬升 / 折叠 / 释放均可见且成功 |
 
 逐次时间戳与阶段标志：`results/consecutive_10_trials.csv` · 逐帧审阅全文：`results/consecutive_10_trials_review.md`
-
-**诚实边界：** 第 10 次之后，约 314.5 s 开始复位，约 320 s 开始第 11 次尝试，但视频在 339.8 s 结束前未能核验其结果——该次**不计入**。源视频没有 `Trial NN` 角标，时间戳来自逐帧审阅。
-
-**报告纪律：** 我们只对本次录像写 *10/10 consecutive trials*，绝不写笼统的「成功率 99%/100%」。
 
 ---
 
