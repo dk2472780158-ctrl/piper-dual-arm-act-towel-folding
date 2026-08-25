@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this project in your research, please cite it as below."
+title: "piper-dual-arm-act-towel-folding"
+abstract: >-
+  An end-to-end imitation learning system for real-time bimanual towel
+  folding using the Action Chunking Transformer (ACT), three RGB cameras,
+  and dual AgileX Piper manipulators at 30 Hz.
+keywords:
+  - imitation learning
+  - action chunking transformer
+  - bimanual manipulation
+  - deformable object manipulation
+  - robot learning
+  - lerobot
+license: Apache-2.0
+date-released: "2026-08-25"
+authors:
+  - name: "dk2472780158-ctrl"
+    affiliation: ""
+    email: "dk13638616257@gmail.com"

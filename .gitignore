@@ -1,0 +1,76 @@
+# ------------------------------------------------------------------
+# Large binaries and private data — never commit these to git.
+# ------------------------------------------------------------------
+
+# Checkpoints and model weights
+**/checkpoints/
+**/pretrained_model/
+*.safetensors
+*.pt
+*.pth
+*.onnx
+*.engine
+*.trt
+
+# Datasets
+**/datasets/
+**/data/
+data/
+dataset/
+*.parquet
+*.mp4
+*.avi
+*.mkv
+*.mov
+*.webm
+
+# Hugging Face cache
+.huggingface/
+.cache/huggingface/
+hf_cache/
+
+# Training / evaluation / runtime outputs
+outputs/
+outputs_eval/
+logs/
+runs/
+wandb/
+**/__pycache__/
+
+# Videos (raw sources stay local; repo keeps only GIFs and links)
+videos/
+raw_videos/
+**/*_raw.mp4
+
+# Secrets & environment
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+credentials.json
+secrets.txt
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Editors / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Local config overrides
+configs/*.local.yaml

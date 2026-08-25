@@ -1,0 +1,40 @@
+# ------------------------------------------------------------------
+# Example real-robot ACT rollout configuration (synchronous, safety-first).
+#
+# Consumed by `piper-towel-eval` / `scripts/evaluate_act.sh`.
+# CLI flags override these values.
+# ------------------------------------------------------------------
+
+# Checkpoint directory in LeRobot `pretrained_model` format.
+checkpoint: <CHECKPOINT_PATH>
+
+device: cuda
+fps: 30.0
+
+# CAN buses.
+left_can: can1
+right_can: can0
+
+# Cameras (RealSense backend in this sync evaluator; see docs for OpenCV).
+camera_width: 640
+camera_height: 480
+camera_fps: 30
+warmup_frames: 30
+
+# ACT replans every `n_action_steps` executed actions.
+n_action_steps: 5
+
+# 0 means run until Ctrl+C. For real execution an explicit positive budget
+# is REQUIRED (safety refusal when --execute is used with 0).
+max_steps: 0
+
+# --- Safety tolerances -------------------------------------------------
+start_joint_tolerance: 0.15     # rad   | max error vs. training start pose
+start_gripper_tolerance: 0.02   # m
+max_joint_step: 0.10            # rad   | max consecutive command delta
+max_gripper_step: 0.01          # m
+max_tracking_error: 0.35        # rad   | measured vs. last commanded
+max_gripper_tracking_error: 0.03 # m
+
+# Dry-run by default. Pass --execute to actually move the arms.
+execute: false

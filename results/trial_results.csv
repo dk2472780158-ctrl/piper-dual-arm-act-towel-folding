@@ -1,0 +1,1 @@
+trial_id,checkpoint,towel_initial_position,towel_orientation,approach_success,left_grasp_success,right_grasp_success,lift_success,fold_success,release_success,final_success,duration_seconds,manual_reset_required,notes

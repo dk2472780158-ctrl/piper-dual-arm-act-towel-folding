@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 680" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrow-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#94a3b8"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="680" fill="#f8fafc"/>
+
+  <!-- Title -->
+  <text x="600" y="42" text-anchor="middle" font-size="26" font-weight="700" fill="#0f172a">
+    Dual-Arm ACT Towel-Folding — Data → Training → Inference → Real Robot
+  </text>
+  <text x="600" y="66" text-anchor="middle" font-size="14" fill="#64748b">
+    ACT (Action Chunking Transformer) · LeRobot · 2 × AgileX Piper · 30 Hz
+  </text>
+
+  <!-- ================= Stage boxes (row 1) ================= -->
+  <!-- 1 Teleop -->
+  <g>
+    <rect x="20" y="110" width="165" height="130" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+    <text x="102" y="138" text-anchor="middle" font-size="15" font-weight="700" fill="#1d4ed8">1 · 遥操作采集</text>
+    <text x="102" y="158" text-anchor="middle" font-size="12" fill="#334155">master / slave 臂</text>
+    <text x="102" y="175" text-anchor="middle" font-size="12" fill="#334155">3× RealSense 640×480</text>
+    <text x="102" y="192" text-anchor="middle" font-size="12" fill="#334155">episodes (parquet + mp4)</text>
+    <text x="102" y="215" text-anchor="middle" font-size="11" fill="#64748b">遥操作 · 单位制修正</text>
+  </g>
+  <line x1="185" y1="175" x2="220" y2="175" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 2 Dataset -->
+  <g>
+    <rect x="225" y="110" width="165" height="130" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+    <text x="307" y="138" text-anchor="middle" font-size="15" font-weight="700" fill="#1d4ed8">2 · 数据集</text>
+    <text x="307" y="160" text-anchor="middle" font-size="12" fill="#334155">obs.state 28 维</text>
+    <text x="307" y="177" text-anchor="middle" font-size="12" fill="#334155">obs.images 3 × [3,480,640]</text>
+    <text x="307" y="194" text-anchor="middle" font-size="12" fill="#334155">action 14 维</text>
+    <text x="307" y="215" text-anchor="middle" font-size="11" fill="#64748b">EpisodeAwareSampler</text>
+  </g>
+  <line x1="390" y1="175" x2="425" y2="175" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 3 Training -->
+  <g>
+    <rect x="430" y="110" width="165" height="130" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+    <text x="512" y="138" text-anchor="middle" font-size="15" font-weight="700" fill="#1d4ed8">3 · ACT 训练</text>
+    <text x="512" y="160" text-anchor="middle" font-size="12" fill="#334155">VAE(32) + ResNet18</text>
+    <text x="512" y="177" text-anchor="middle" font-size="12" fill="#334155">chunk 100 · exec 50</text>
+    <text x="512" y="194" text-anchor="middle" font-size="12" fill="#334155">ImageNet mean/std</text>
+    <text x="512" y="215" text-anchor="middle" font-size="11" fill="#64748b">lerobot-train · CUDA</text>
+  </g>
+  <line x1="595" y1="175" x2="630" y2="175" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 4 Checkpoint -->
+  <g>
+    <rect x="635" y="110" width="165" height="130" rx="10" fill="#fffbeb" stroke="#d97706" stroke-width="2"/>
+    <text x="717" y="138" text-anchor="middle" font-size="15" font-weight="700" fill="#b45309">4 · 模型权重</text>
+    <text x="717" y="160" text-anchor="middle" font-size="12" fill="#334155">pretrained_model/</text>
+    <text x="717" y="177" text-anchor="middle" font-size="12" fill="#334155">checkpoint 040000</text>
+    <text x="717" y="194" text-anchor="middle" font-size="12" fill="#334155">weights + config.json</text>
+    <text x="717" y="215" text-anchor="middle" font-size="11" fill="#64748b">不入库 · 独立下载</text>
+  </g>
+  <line x1="800" y1="175" x2="835" y2="175" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 5 Async inference -->
+  <g>
+    <rect x="840" y="110" width="165" height="130" rx="10" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+    <text x="922" y="138" text-anchor="middle" font-size="15" font-weight="700" fill="#6d28d9">5 · 异步推理</text>
+    <text x="922" y="160" text-anchor="middle" font-size="12" fill="#334155">gRPC</text>
+    <text x="922" y="177" text-anchor="middle" font-size="12" fill="#334155">policy_server (CUDA)</text>
+    <text x="922" y="194" text-anchor="middle" font-size="12" fill="#334155">robot_client (CPU)</text>
+    <text x="922" y="215" text-anchor="middle" font-size="11" fill="#64748b">chunk 100 → 30 步执行</text>
+  </g>
+  <line x1="1005" y1="175" x2="1040" y2="175" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 6 Deployment -->
+  <g>
+    <rect x="1045" y="110" width="135" height="130" rx="10" fill="#ecfdf5" stroke="#059669" stroke-width="2"/>
+    <text x="1112" y="138" text-anchor="middle" font-size="15" font-weight="700" fill="#047857">6 · 真机执行</text>
+    <text x="1112" y="160" text-anchor="middle" font-size="12" fill="#334155">2 × Piper (CAN)</text>
+    <text x="1112" y="177" text-anchor="middle" font-size="12" fill="#334155">左 can1 · 右 can0</text>
+    <text x="1112" y="194" text-anchor="middle" font-size="12" fill="#334155">30 Hz 控制环</text>
+    <text x="1112" y="215" text-anchor="middle" font-size="11" fill="#64748b">位置控制</text>
+  </g>
+
+  <!-- ================= Feedback loop ================= -->
+  <path d="M1112 240 L1112 290 C1112 305 1097 315 1082 315 L160 315 C145 315 130 305 130 290 L130 262"
+        fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrow-gray)"/>
+  <text x="600" y="308" text-anchor="middle" font-size="12" fill="#64748b">
+    观测反馈 · 30 Hz（关节 + 力矩状态 / 三目图像）→ 进入下一轮 chunk 生成
+  </text>
+
+  <!-- ================= Safety layer band ================= -->
+  <rect x="20" y="360" width="1160" height="200" rx="12" fill="#fef2f2" stroke="#dc2626" stroke-width="2"/>
+  <text x="600" y="392" text-anchor="middle" font-size="18" font-weight="700" fill="#b91c1c">
+    安全层（每个控制步强制执行，永不绕过）
+  </text>
+
+  <g text-anchor="middle" font-size="13" fill="#334155">
+    <text x="150" y="430" font-weight="700" fill="#b91c1c">起点位姿校验</text>
+    <text x="150" y="450">0.15 rad / 0.02 m</text>
+    <text x="150" y="470">偏离训练起点 → 拒绝启动</text>
+
+    <text x="390" y="430" font-weight="700" fill="#b91c1c">逐命令步长限制</text>
+    <text x="390" y="450">关节 0.10 rad · 夹爪 0.01 m</text>
+    <text x="390" y="470">防止单步猛拉</text>
+
+    <text x="630" y="430" font-weight="700" fill="#b91c1c">跟踪误差监视</text>
+    <text x="630" y="450">0.35 rad / 0.03 m</text>
+    <text x="630" y="470">卡滞 / 被阻挡 → 停机</text>
+
+    <text x="870" y="430" font-weight="700" fill="#b91c1c">硬件限位 + 夹爪裁剪</text>
+    <text x="870" y="450">Piper SDK 物理限位</text>
+    <text x="870" y="470">夹爪 [0, 0.08] m</text>
+
+    <text x="1080" y="430" font-weight="700" fill="#b91c1c">永不下电</text>
+    <text x="1080" y="450">保持 ENABLED</text>
+    <text x="1080" y="470">防止臂坠落</text>
+  </g>
+
+  <g text-anchor="middle" font-size="11" fill="#64748b">
+    <text x="600" y="520">关节低通滤波 PIPER_ACTION_FILTER_ALPHA（默认 1.0 = 关闭） · 仲裁：chunk 重叠区 weighted_average（0.3·old + 0.7·new）</text>
+    <text x="600" y="540">评测默认 DRY-RUN；真实执行需 --execute 并键入 EXECUTE 确认，且要求显式 --max-steps 预算</text>
+  </g>
+</svg>

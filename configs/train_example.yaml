@@ -1,0 +1,108 @@
+# ------------------------------------------------------------------
+# Example ACT training configuration for the towel-folding dataset.
+#
+# Load it with:
+#   lerobot-train --config configs/train_example.yaml
+# and override anything on the CLI, e.g.:
+#   lerobot-train --config configs/train_example.yaml \
+#     --dataset.root "$DATASET_ROOT" --steps 50000
+#
+# The numbers below reproduce the run `towel_fold_act_v2` reported in
+# README. Values are taken from the saved `train_config.json` of that
+# run; change them only if you deliberately want a different setup.
+# ------------------------------------------------------------------
+
+dataset:
+  repo_id: local/towel_fold_dataset
+  root: <DATASET_ROOT>            # path to the LeRobot dataset directory
+  episodes: null                  # use all episodes
+  use_imagenet_stats: true        # ImageNet mean/std override for images
+  video_backend: torchcodec
+  streaming: false
+  image_transforms:
+    enable: false                 # augmentation was off for the reference run
+
+env: null
+
+policy:
+  type: act
+  n_obs_steps: 1
+  chunk_size: 100
+  n_action_steps: 50
+  use_vae: true
+  latent_dim: 32
+  n_vae_encoder_layers: 4
+  vision_backbone: resnet18
+  pretrained_backbone_weights: ResNet18_Weights.IMAGENET1K_V1
+  replace_final_stride_with_dilation: 0
+  pre_norm: false
+  dim_model: 512
+  n_heads: 8
+  dim_feedforward: 3200
+  feedforward_activation: relu
+  n_encoder_layers: 4
+  n_decoder_layers: 1
+  temporal_ensemble_coeff: null
+  dropout: 0.1
+  kl_weight: 10.0
+  optimizer_lr: 1e-5
+  optimizer_weight_decay: 1e-4
+  optimizer_lr_backbone: 1e-5
+  # Observation / action space — do not change unless your dataset differs.
+  input_features:
+    observation.state:
+      type: STATE
+      shape: [28]
+    observation.images.left:
+      type: VISUAL
+      shape: [3, 480, 640]
+    observation.images.middle:
+      type: VISUAL
+      shape: [3, 480, 640]
+    observation.images.right:
+      type: VISUAL
+      shape: [3, 480, 640]
+  output_features:
+    action:
+      type: ACTION
+      shape: [14]
+  normalization_mapping:
+    VISUAL: MEAN_STD
+    STATE: MEAN_STD
+    ACTION: MEAN_STD
+
+output_dir: outputs/train/towel_fold_act
+job_name: towel_fold_act
+resume: true
+seed: 1000
+num_workers: 4
+batch_size: 8
+steps: 50000
+eval_freq: 0
+log_freq: 200
+tolerance_s: 1e-4
+save_checkpoint: true
+save_freq: 10000
+use_policy_training_preset: true
+
+optimizer:
+  type: adamw
+  lr: 1e-5
+  weight_decay: 1e-4
+  grad_clip_norm: 10.0
+  betas: [0.9, 0.999]
+  eps: 1e-8
+
+scheduler: null
+
+eval:
+  n_episodes: 50
+  batch_size: 50
+  use_async_envs: false
+
+wandb:
+  enable: false
+  project: lerobot
+
+use_rabc: false
+rename_map: {}

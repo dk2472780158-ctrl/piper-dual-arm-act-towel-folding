@@ -1,0 +1,36 @@
+piper-dual-arm-act-towel-folding
+===============================
+
+Copyright 2026 the piper-dual-arm-act-towel-folding contributors
+
+This project is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+Third-party notice
+------------------
+
+This project is built on top of, and reuses code from, several open-source
+projects. Copyrights and licenses are preserved as follows:
+
+* LeRobot (https://github.com/huggingface/lerobot)
+  Copyright 2024-2025 The HuggingFace Inc. team.
+  Licensed under the Apache License, Version 2.0.
+  The ACT policy (`policies/act/*`), the LeRobot dataset format, and the
+  async inference transport used by this project originate from this project.
+
+* ALOHA / ACT
+  "Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware"
+  (https://github.com/tonyzhaozh/act)
+  Copyright 2024 Tony Z. Zhao. Licensed under the Apache License, Version 2.0.
+  The Action Chunking Transformer model architecture derives from this work,
+  as reimplemented inside LeRobot.
+
+* Piper robot SDK (https://github.com/agilexrobotics/piper_sdk)
+  Copyright AgileX Robotics. This is a third-party hardware SDK dependency.
+  It is NOT vendored into this repository; install it separately per the
+  README. Check its own license before redistribution.
+
+* `piper_towel_folding/safety.py`, `reset_pose.py`, `eval_rollout.py`,
+  and `piper/dual_robot.py` are original work of this project's authors.
+
+If you distribute this repository, keep this NOTICE file and all copyright
+headers intact.

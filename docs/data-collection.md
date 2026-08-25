@@ -1,0 +1,43 @@
+# 数据采集
+
+本仓库发布的数据采集流程与 LeRobot 生态一致（episodes 为 parquet + mp4），并针对真实硬件做了三处关键修正。
+
+## 1. 流程
+
+```
+操作员遥操作 master 臂 → slave 臂跟随 → 三目相机与关节状态同步记录 → 生成 episode
+```
+
+- 每段 episode 保存 `observation.state`、`observation.images.{left,middle,right}` 与 `action`。
+- 数据格式为 LeRobot 数据集（`datasets/*` 目录结构 + `meta/info.json`）。
+- 采样器 `EpisodeAwareSampler` 按 episode 边界组织训练样本，避免跨 episode 拼接。
+
+## 2. 观测 / 动作定义
+
+| 字段 | 维度 | 内容 |
+|---|---|---|
+| `observation.state` | 28 | 每臂 7 电机 ×（位置 + 力矩）× 2 臂 |
+| `observation.images.*` | [3,480,640] ×3 | 左/中/右相机 |
+| `action` | 14 | [左 j1..j6, 左夹爪, 右 j1..j6, 右夹爪]，位置控制 |
+
+## 3. 单位制修正（重要）
+
+原始遥操作数据中夹爪 / 部分关节存在单位不一致（`RANGE_M100_100` 等标记），发布前做了修正：
+
+- 夹爪统一为**米**，行程 [0, 0.08] m。
+- 关节统一为**弧度**。
+- 相关修正逻辑保留在驱动与安全层中（`normalize_gripper_commands` 将负夹爪指令裁剪到 0，防止 Piper 总线 `abs()` 造成「负数指令被静默解读为张开」的隐患）。
+
+> 若你的数据集来自其他源，务必核对单位，否则动作超出物理限位会被安全层拦截（这不是 bug，而是保护）。
+
+## 4. 相机配置
+
+- 三目（左/中/右）RealSense，640×480 @ 30 fps。
+- 仓库不保存设备序列号；部署时通过 `.env`（`CAMERA_LEFT/MIDDLE/RIGHT`）或 udev 符号链接指向 `/dev/camera_*`。
+- 采集时需保证三路相机时间对齐（同为 30 fps，逐帧同步写入 episode）。
+
+## 5. 待确认项
+
+- 数据集 episode 总数、每 episode 时长、总时长：**待确认**（原始数据集未随审计样本提供，仓库不回填伪造数字）。
+- 数据增强：参考运行 `image_transforms.enable=false`（关闭），若后续开启需重新评测。
+- 是否包含「失败 / 中断」demo 作为负样本：**待确认**。

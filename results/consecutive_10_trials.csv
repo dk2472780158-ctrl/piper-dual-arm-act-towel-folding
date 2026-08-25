@@ -1,0 +1,11 @@
+trial_id,video_start_time,video_end_time,towel_initial_position,towel_orientation,approach_success,left_grasp_success,right_grasp_success,lift_success,fold_success,release_success,final_success,duration_seconds,manual_reset_required,checkpoint,notes
+01,,,,,,,,,,,,,,,
+02,,,,,,,,,,,,,,,
+03,,,,,,,,,,,,,,,
+04,,,,,,,,,,,,,,,
+05,,,,,,,,,,,,,,,
+06,,,,,,,,,,,,,,,
+07,,,,,,,,,,,,,,,
+08,,,,,,,,,,,,,,,
+09,,,,,,,,,,,,,,,
+10,,,,,,,,,,,,,,,

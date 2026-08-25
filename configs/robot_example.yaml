@@ -1,0 +1,48 @@
+# ------------------------------------------------------------------
+# Dual Piper robot + camera layout used across data collection,
+# sync rollout, and async inference. Fill from your `.env`.
+# ------------------------------------------------------------------
+
+robot:
+  type: piper_dual
+  left_port: can1              # or ${ROBOT_LEFT_CAN}
+  right_port: can0             # or ${ROBOT_RIGHT_CAN}
+  read_only: false             # true = connect for reading, never enable motors
+  cameras:
+    left:
+      type: opencv
+      index_or_path: /dev/camera_left      # stable udev symlink
+      width: 640
+      height: 480
+      fps: 30
+      rotation: 0
+    middle:
+      type: opencv
+      index_or_path: /dev/camera_middle
+      width: 640
+      height: 480
+      fps: 30
+      rotation: 0
+    right:
+      type: opencv
+      index_or_path: /dev/camera_right
+      width: 640
+      height: 480
+      fps: 30
+      rotation: 0
+
+# Observation / action contract (must match the trained ACT config).
+# observation.state : 28 = (left_arm 7 motors + right_arm 7 motors) x (pos, effort)
+# action            : 14 = [left j1..j6, left gripper, right j1..j6, right gripper]
+task: Fold the towel with both Piper arms.
+
+# Async inference (main deployment path). See docs/deployment.md.
+async:
+  server_address: 127.0.0.1:8082
+  policy_type: act
+  policy_device: cuda
+  client_device: cpu
+  actions_per_chunk: 30        # truncate the 100-step ACT chunk to 30
+  chunk_size_threshold: 0.6
+  aggregate_fn_name: weighted_average   # 0.3 * old + 0.7 * new
+  fps: 30

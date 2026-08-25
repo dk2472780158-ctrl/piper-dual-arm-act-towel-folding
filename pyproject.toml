@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "piper-dual-arm-act-towel-folding"
+version = "0.1.0"
+description = "End-to-end imitation learning for real-time bimanual towel folding with ACT, three RGB cameras, and dual Piper manipulators."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+keywords = ["imitation-learning", "ACT", "robot-learning", "bimanual", "piper", "lerobot", "embodied-ai"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Robotics",
+]
+
+dependencies = [
+    "torch>=2.1",
+    "torchvision",
+    "numpy",
+    "lerobot",               # https://github.com/huggingface/lerobot
+    "piper-sdk",             # AgileX Piper arm SDK (see NOTICE)
+    "opencv-python",
+    "python-dotenv",
+]
+
+[project.optional-dependencies]
+# Training / eval only — record + rollout in the async_inference path need:
+async = [
+    "grpcio",
+    "draccus",
+    "pickle5",
+]
+test = [
+    "pytest",
+    "pytest-cov",
+]
+
+[project.scripts]
+piper-towel-reset = "piper_towel_folding.reset_pose:main"
+piper-towel-eval = "piper_towel_folding.eval_rollout:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP"]

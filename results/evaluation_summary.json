@@ -1,0 +1,45 @@
+{
+  "template": "backfill-from-real-run",
+  "note": "This is a template. Replace every null/empty value with numbers from an actual evaluation run. Do not publish fabricated numbers.",
+  "run_metadata": {
+    "checkpoint": null,
+    "checkpoint_global_step": null,
+    "hardware": null,
+    "control_fps": null,
+    "date": null,
+    "operator": null
+  },
+  "trials": {
+    "total": null,
+    "successful": null,
+    "consecutive_10_trials_claim": "in progress - see consecutive_10_trials.csv",
+    "manual_resets_required": null
+  },
+  "per_phase_success": {
+    "approach": null,
+    "left_grasp": null,
+    "right_grasp": null,
+    "lift": null,
+    "fold": null,
+    "release": null
+  },
+  "duration_metrics": {
+    "mean_trial_duration_s": null,
+    "median_trial_duration_s": null,
+    "min_trial_duration_s": null,
+    "max_trial_duration_s": null
+  },
+  "safety_events": {
+    "safety_stops_triggered": 0,
+    "command_step_violations": 0,
+    "tracking_error_stops": 0,
+    "start_pose_refusals": 0,
+    "estop_activations": 0
+  },
+  "failure_analysis": [],
+  "environment": {
+    "towel_spec": null,
+    "workspace": null,
+    "lighting": null
+  }
+}
