@@ -1,6 +1,6 @@
 # 模型训练
 
-训练基于 LeRobot 的 `lerobot-train`，ACT 策略。所有数值来自实际训练运行的 `train_config.json`（checkpoint 030000 的 4 份 JSON 配置为审计依据）。
+训练基于 LeRobot 的 `lerobot-train`，ACT 策略。所有数值来自实际训练运行的 `train_config.json`（部署所用 run `towel_fold_act_v4_scratch60k` 已从主机确认；v2/030000 的 4 份 JSON 作为早期 run 依据保留在审计材料）。
 
 ## 1. 训练命令
 
@@ -33,7 +33,7 @@ lerobot-train --config configs/train_example.yaml \
 | 参数 | 值 |
 |---|---|
 | batch_size | 8 |
-| steps | 50000（每 10000 步保存一次 checkpoint） |
+| steps | 60000（目标；每 10000 步保存一次 checkpoint，实际保存到 040000 = last） |
 | optimizer | AdamW，lr 1e-5，weight_decay 1e-4，grad_clip 10.0 |
 | seed | 1000 |
 | eval_freq | 0（参考运行未在训练中做仿真评测） |
@@ -48,18 +48,19 @@ lerobot-train --config configs/train_example.yaml \
 ## 5. 检查点
 
 - 训练产出 LeRobot `pretrained_model` 目录（`model.safetensors` + `config.json`）。
-- 参考部署使用 `checkpoint 040000`；审计到 `030000` 的配置并存有 4 份 JSON。
-- **040000 的 `config.json` 已核对**（2026-08 从部署主机导出）：架构与 030000
-  完全一致（chunk 100 / exec 50、ResNet18、dim 512、VAE 32、kl 10.0、
-  optimizer_lr 1e-05、weight_decay 1e-04、lr_backbone 1e-05），且其
-  `pretrained_path` 指向 `.../030000/pretrained_model` —— 即 **040000 是从
-  030000 继续训练出来的**（同 run `towel_fold_act_v2`，resume=true）。
-  本节的架构与超参数表同时覆盖两个 checkpoint。
-- **模型溯源（已确认）**：run `towel_fold_act_v2`，checkpoint 040000，target steps
-  50000，batch_size 8；训练集 `local/towel_fold_dataset`（60 条 demo / 42,373 帧 /
-  30 fps，增强关闭）；模型 SHA256
-  `ae4485689708457b5cdabf72628af5a61aa1eba3423badc9f0e49013dbe11e4c`。
-  120 条 demo 的 `towel_fold_dataset_aug_v1` 与 v4 模型是后续实验，与 10/10 视频声明无关。
+- **部署所用（已确认）**：run `towel_fold_act_v4_scratch60k` 的 `checkpoint 040000`，
+  与 `checkpoints/last` 的 `model.safetensors` SHA256 完全一致，二者为同一份权重。
+- 该 run **从零训练**（`resume=false`，run 名 `scratch60k`），目标 steps 60000，
+  save_freq 10000；`last` 的 `config.json` 中 `pretrained_path` 指向同 run 的
+  `.../030000/pretrained_model`（即 040000/last 是同 run 030000 的续训产物）。
+  本节的架构与超参数表即该 run 的 `train_config.json` 实测值。
+- **模型溯源（已确认）**：run `towel_fold_act_v4_scratch60k`，checkpoint 040000
+  (=last)，target steps 60000，batch_size 8；训练集 `local/towel_fold_dataset_aug_v1`
+  （**120 条 demo / 85,187 帧 / 30 fps，增强关闭**）；模型 SHA256
+  `e118230cb7be20e307a64598fced077f50c631651b243deb2cf0db8366a4c28c`。
+- 早期 run `towel_fold_act_v1/v2/v3`、`cube_r2l_act_v1` 均在本机存在；v2 训练集为
+  60 条 demo 的 `local/towel_fold_dataset`（本地审计保留 v2/030000 的 4 份 JSON），
+  它们**不**是 10/10 视频所用模型。
 - 权重文件**不入库**，提供独立下载说明（见 README「下载」一节）。
 
 ## 6. 待确认项

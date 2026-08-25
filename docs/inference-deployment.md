@@ -87,11 +87,25 @@ robot_client（CPU，相机 + CAN 关节，30 Hz 控制环）
 
 全部通过后再考虑 `--execute`。
 
-## 5. 待确认项
+## 5. 时延测量
 
-- 040000 与 030000 检查点的推理延迟差异：**待确认**（无延迟日志）。
+`results/latency_results.csv` 模板（mean & p95）用单进程同步路径 `eval_rollout.py`
+采集（已内置 `--latency-csv` 参数）：
+
+```bash
+./scripts/measure_latency.sh            # 干跑：读相机/状态 + CUDA 推理，不动手臂
+./scripts/measure_latency.sh --execute --max-steps 900   # 真机 30 s
+```
+
+- 同步路径可测：`observation_capture`、`policy_inference`、`control_loop_period`。
+- `chunk_encode` / `grpc_roundtrip` 属异步 gRPC 路径指标，同步 runner 测不到，
+  保持空行并标注**待确认**（需要在部署的 async 栈上加客户端计时器）。
+
+## 6. 待确认项
+
+- 040000 与 030000 检查点的推理延迟差异：**待确认**（未在异步栈上测）。
 - gRPC 批量 / 吞吐上限：**待确认**。
 
-> 已确认（2026-08）：部署所用 040000 的 `config.json` 中 `pretrained_path` 指向
-> `.../030000/pretrained_model`，即 040000 是 030000 的续训结果；两者架构参数一致
-> （见 [training.md](training.md)）。
+> 已确认（2026-08）：部署所用 040000 来自 run `towel_fold_act_v4_scratch60k`，其
+> `config.json` 中 `pretrained_path` 指向同 run 的 `.../030000/pretrained_model`，
+> 且 040000 与 `last` 的权重 SHA256 一致；架构参数见 [training.md](training.md)。

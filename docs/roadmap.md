@@ -13,7 +13,7 @@
 | 项 | 说明 |
 |---|---|
 | 回填结果模板 | 用一次连续录像逐帧填 `consecutive_10_trials.csv`，再汇总到 `evaluation_summary.json` |
-| 时延摸底 | 录 `latency_results.csv`（推理 / chunk / gRPC / 控制环 mean & p95） |
+| 时延摸底 | 工具已就绪：`./scripts/measure_latency.sh` 填 `latency_results.csv`（推理 / 观测采集 / 控制环 mean & p95；chunk / gRPC 待异步计时） |
 | 失败分析补全 | 每次失败按阶段 + 现象 + 原因 + 处置记录进 `failure_analysis` |
 | 三份视频 | Hero Demo、连续十次完整版、技术分析（见 `docs/video-script.md`） |
 | 精确版本锁定 | 生成 `requirements-lock.txt`，固定 lerobot / torch / piper-sdk 版本 |
@@ -40,5 +40,8 @@
 ## 5. 诚实边界
 
 - 当前可对外声明的只有「连续 10 次录像证据」；≥20 次统计、鲁棒性、基线对比均**待确认**，未做实验不写结论。
-- 040000 checkpoint 的完整配置与训练集已确认（与 030000 一致、同 run 续训；训练集 60 条 demo / 42,373 帧，见 [training.md](training.md)）；GPU 为 NVIDIA A10（24 GB）已确认，单步耗时 / 训练墙钟仍未记录，见各 doc。
-- 120 条 demo 的 `towel_fold_dataset_aug_v1` 数据集与 v4 模型是**后续实验**，不并入 10/10 连续成功视频的声明。
+- 10/10 声明所用的模型已确认：run `towel_fold_act_v4_scratch60k`，checkpoint 040000
+  （= last，同一份权重），训练集 120 条 demo / 85,187 帧的 `towel_fold_dataset_aug_v1`，
+  见 [training.md](training.md)。GPU 为 NVIDIA A10（24 GB）已确认；单步耗时 / 训练墙钟仍未记录，见各 doc。
+- 早期 run（v1/v2/v3、cube_r2l_act_v1）在本机存在；v2 用 60 条 demo 的 `towel_fold_dataset`，
+  它们**不**并入 10/10 声明。

@@ -43,7 +43,7 @@ ACT（Action Chunking Transformer）· LeRobot · gRPC 异步推理 · 30 Hz 实
 | 完成 / 成功 | 10 / 10 |
 | 人工复位 | 是 —— 每次试验前由操作员重新摆放毛巾 |
 | 时间精度 | ±0.5 s |
-| Checkpoint | 040000 |
+| Checkpoint | v4 · 040000（= last） |
 | 分阶段表现 | 每次试验的 approach / 左右抓取 / 抬升 / 折叠 / 释放均可见且成功 |
 
 逐次时间戳与阶段标志：`results/consecutive_10_trials.csv` · 逐帧审阅全文：`results/consecutive_10_trials_review.md`
@@ -52,9 +52,12 @@ ACT（Action Chunking Transformer）· LeRobot · gRPC 异步推理 · 30 Hz 实
 
 ## 数据集与检查点
 
-连续十次评测使用的 ACT 检查点为 `towel_fold_act_v2` 训练的 **global step 040000**。
+连续十次评测使用的 ACT 检查点为 `towel_fold_act_v4_scratch60k` 训练的
+**global step 040000**（与 `last` 权重一致，SHA256 相同），该 run **从零训练**
+（目标 60,000 步，batch size 8）。
 
-策略在 **60 条真实双臂示范**上训练，共 42,373 帧、30 FPS；该次运行**关闭了图像增强**。
+策略在 **120 条真实双臂示范**（`local/towel_fold_dataset_aug_v1`）上训练，
+共 85,187 帧、30 FPS；该次运行**关闭了图像增强**。
 
 - 机器人：双 AgileX Piper
 - 相机：三路 RGB（`left` / `middle` / `right`）
@@ -63,13 +66,13 @@ ACT（Action Chunking Transformer）· LeRobot · gRPC 异步推理 · 30 Hz 实
 - ACT chunk size：100
 - 训练 batch size：8
 - Piper SDK：0.6.2
-- 检查点 SHA256：`ae4485689708457b5cdabf72628af5a61aa1eba3423badc9f0e49013dbe11e4c`
+- 检查点 SHA256：`e118230cb7be20e307a64598fced077f50c631651b243deb2cf0db8366a4c28c`
 
 在一次连续录制的实验中，系统完成 10 次测试并成功 10 次（10/10 consecutive trials）。
 这是对**该次录制**的陈述，不是一般的成功率估计。
 
-> 120 条示范的 `towel_fold_dataset_aug_v1` 数据集与后续 v4 模型是**独立的后续实验**，
-> 不归入上述 10/10 视频声明的范围。
+> `towel_fold_act_v1/v2/v3` 与 `cube_r2l_act_v1` 是早期训练 run（v2 用的是 60 条 demo 的
+> `towel_fold_dataset`），**不**是 10/10 录制声明里的模型。
 
 ---
 
@@ -163,7 +166,7 @@ lerobot-record --robot.type=piper_dual --robot.left_port=can1 --robot.right_port
   --robot.cameras="{left: {type: opencv, index_or_path: /dev/camera_left, width: 640, height: 480, fps: 30}, \
     middle: {type: opencv, index_or_path: /dev/camera_middle, width: 640, height: 480, fps: 30}, \
     right: {type: opencv, index_or_path: /dev/camera_right, width: 640, height: 480, fps: 30}}" \
-  --dataset.repo_id=local/towel_fold_dataset --dataset.num_episodes=30 \
+  --dataset.repo_id=local/towel_fold_dataset_aug_v1 --dataset.num_episodes=120 \
   --dataset.single_task="Fold the towel with both Piper arms."
 ```
 
@@ -220,8 +223,14 @@ DATASET_ROOT="$DATASET_ROOT" ./scripts/train_act.sh
 
 ## 下载（数据与权重——不入库）
 
-- **数据集**（LeRobot episodes）：由采集主机导出，见 `docs/reproducibility.md`。
-- **检查点**（`pretrained_model/`）：由训练主机导出，设置 `POLICY_CHECKPOINT`。
+- **数据集**（LeRobot episodes，10/10 视频背后的 120 条 demo，
+  `local/towel_fold_dataset_aug_v1`）：由采集主机导出，见
+  `docs/reproducibility.md`。已准备 Hugging Face 镜像
+  （`dk2472780158-ctrl/towel_fold_dataset_aug_v1`），URL **待确认**，发布前见
+  `docs/publishing.md`。
+- **检查点**（`pretrained_model/`，v4 040000 = last）：由训练主机导出，设置
+  `POLICY_CHECKPOINT`。HF 镜像已准备（`dk2472780158-ctrl/towel_fold_act_v4_040000`），
+  URL **待确认**。
 - **视频**：仓库只放 GIF / 封面 / 链接，原始素材保留在本机。
 
 ## 操作红线（逐字保留）

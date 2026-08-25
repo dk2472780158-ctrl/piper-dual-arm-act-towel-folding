@@ -2,7 +2,7 @@
 
 Source video: `81c13606ca513d4bac332b06b7176f75.mp4`
 
-Checkpoint: `040000`
+Checkpoint: `towel_fold_act_v4_scratch60k` @ 040000 (= `last`)
 
 ## Result card
 

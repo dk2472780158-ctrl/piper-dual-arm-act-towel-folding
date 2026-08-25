@@ -7,13 +7,14 @@
 #   lerobot-train --config configs/train_example.yaml \
 #     --dataset.root "$DATASET_ROOT" --steps 50000
 #
-# The numbers below reproduce the run `towel_fold_act_v2` reported in
-# README. Values are taken from the saved `train_config.json` of that
-# run; change them only if you deliberately want a different setup.
+# The numbers below reproduce the run `towel_fold_act_v4_scratch60k` reported
+# in README (the model behind the 10/10 recording). Values are taken from the
+# saved `train_config.json` of that run; change them only if you deliberately
+# want a different setup.
 # ------------------------------------------------------------------
 
 dataset:
-  repo_id: local/towel_fold_dataset
+  repo_id: local/towel_fold_dataset_aug_v1
   root: <DATASET_ROOT>            # path to the LeRobot dataset directory
   episodes: null                  # use all episodes
   use_imagenet_stats: true        # ImageNet mean/std override for images
@@ -71,13 +72,13 @@ policy:
     STATE: MEAN_STD
     ACTION: MEAN_STD
 
-output_dir: outputs/train/towel_fold_act
-job_name: towel_fold_act
-resume: true
+output_dir: outputs/train/towel_fold_act_v4_scratch60k
+job_name: towel_fold_act_v4_scratch60k
+resume: false
 seed: 1000
 num_workers: 4
 batch_size: 8
-steps: 50000
+steps: 60000
 eval_freq: 0
 log_freq: 200
 tolerance_s: 1e-4

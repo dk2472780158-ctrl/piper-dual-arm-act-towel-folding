@@ -41,7 +41,7 @@ A real towel-folding skill that runs on two physical AgileX Piper arms, end to e
 | Trials completed / succeeded | 10 / 10 |
 | Manual reset | yes — before every trial the operator repositions the towel |
 | Timing precision | ±0.5 s |
-| Checkpoint | 040000 |
+| Checkpoint | v4 · 040000 (= last) |
 | Per-stage outcome | approach · left/right grasp · lift · fold · release all visible and successful in every trial |
 
 Per-trial timestamps and stage flags: `results/consecutive_10_trials.csv` · full frame-by-frame review: `results/consecutive_10_trials_review.md`
@@ -51,10 +51,12 @@ Per-trial timestamps and stage flags: `results/consecutive_10_trials.csv` · ful
 ## Dataset and checkpoint
 
 The consecutive-trial evaluation uses the ACT checkpoint at global step
-`040000` from the `towel_fold_act_v2` run.
+`040000` (identical to `last`) from the `towel_fold_act_v4_scratch60k` run,
+trained from scratch (target 60,000 steps, batch size 8).
 
-The policy was trained on 60 real dual-arm demonstrations containing 42,373
-frames at 30 FPS. Image augmentation was disabled for this run.
+The policy was trained on 120 real dual-arm demonstrations
+(`local/towel_fold_dataset_aug_v1`) containing 85,187 frames at 30 FPS.
+Image augmentation was disabled for this run.
 
 - Robot: dual AgileX Piper
 - Cameras: three RGB views (`left`, `middle`, `right`)
@@ -63,15 +65,15 @@ frames at 30 FPS. Image augmentation was disabled for this run.
 - ACT chunk size: 100
 - Training batch size: 8
 - Piper SDK: 0.6.2
-- Checkpoint SHA256: `ae4485689708457b5cdabf72628af5a61aa1eba3423badc9f0e49013dbe11e4c`
+- Checkpoint SHA256: `e118230cb7be20e307a64598fced077f50c631651b243deb2cf0db8366a4c28c`
 
 In one continuous recording, the system completed 10 tests and succeeded in
 all 10 (`10/10 consecutive trials`). This is a result for that recording,
 not a general success-rate estimate.
 
-> The 120-demonstration `towel_fold_dataset_aug_v1` dataset and the follow-up
-> v4 model are separate future experiments and are **not** part of the 10/10
-> recording claim above.
+> `towel_fold_act_v1/v2/v3` and `cube_r2l_act_v1` are earlier training runs on
+> this rig (v2 used the 60-demonstration `towel_fold_dataset`); they are
+> **not** the model in the 10/10 recording claim above.
 
 ---
 
@@ -169,7 +171,7 @@ lerobot-record --robot.type=piper_dual --robot.left_port=can1 --robot.right_port
   --robot.cameras="{left: {type: opencv, index_or_path: /dev/camera_left, width: 640, height: 480, fps: 30}, \
     middle: {type: opencv, index_or_path: /dev/camera_middle, width: 640, height: 480, fps: 30}, \
     right: {type: opencv, index_or_path: /dev/camera_right, width: 640, height: 480, fps: 30}}" \
-  --dataset.repo_id=local/towel_fold_dataset --dataset.num_episodes=30 \
+  --dataset.repo_id=local/towel_fold_dataset_aug_v1 --dataset.num_episodes=120 \
   --dataset.single_task="Fold the towel with both Piper arms."
 ```
 
@@ -234,8 +236,14 @@ auto-disabled, to prevent dropping the load).
 
 ## Downloads (data & weights — never in git)
 
-- **Dataset** (LeRobot episodes): exported from the collection host — see `docs/reproducibility.md`.
-- **Checkpoint** (`pretrained_model/`): exported from the training host — set `POLICY_CHECKPOINT`.
+- **Dataset** (LeRobot episodes, the 120 demos behind the 10/10 video,
+  `local/towel_fold_dataset_aug_v1`): export from the collection host — see
+  `docs/reproducibility.md`. A Hugging Face mirror is prepared
+  (`dk2472780158-ctrl/towel_fold_dataset_aug_v1`), URL **待确认 until the
+  owner publishes** — see `docs/publishing.md`.
+- **Checkpoint** (`pretrained_model/`, v4 040000 = last): export from the
+  training host — set `POLICY_CHECKPOINT`. HF mirror prepared
+  (`dk2472780158-ctrl/towel_fold_act_v4_040000`), URL **待确认**.
 - **Videos**: GIF/covers/links only in the repo; raw footage stays local.
 
 ## Safety & red lines (verbatim)

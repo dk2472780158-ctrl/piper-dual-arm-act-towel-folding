@@ -1,6 +1,8 @@
 # 可复现性
 
 目标：拿到本仓库 + 数据 + 权重 + 一套 Piper 硬件，就能复现「连续 10/10」的实验。
+数据与权重计划发布到 Hugging Face（见 [publishing.md](publishing.md)）；**发布前无
+对外下载渠道，外部复现者需要你线下提供数据与权重**，README 里的 HF URL 均为待确认。
 
 ## 1. 环境
 
@@ -48,13 +50,14 @@ python -m pytest tests/ -q        # 安全层 + 配置单测
 | 安全 | 起点 0.15/0.02，步长 0.10/0.01，跟踪 0.35/0.03 |
 | 相机 | 三目 640×480 @ 30 |
 
-> 040000 与 030000 的配置已核对为完全一致（040000 的 `config.json` 已导出，且其
-> `pretrained_path` 指向 030000，即 040000 是 030000 的续训结果），因此上表同时
-> 覆盖部署所用的 040000 与审计材料中的 030000。
+> 部署所用 checkpoint 040000（run `towel_fold_act_v4_scratch60k`）的架构参数与
+> 上表一致（已从该 run 的 `train_config.json` 核对），且其与 `last` 的
+> `model.safetensors` SHA256 一致（同一份权重）。训练集为
+> `local/towel_fold_dataset_aug_v1`（**120 条 demo / 85,187 帧 / 30 fps，增强关闭，
+> 见 [data-collection.md](data-collection.md)**）。
 >
-> 参考模型的训练集：`local/towel_fold_dataset`（60 条 demo / 42,373 帧 / 30 fps，
-> 增强关闭，见 [data-collection.md](data-collection.md)）。120 条 demo 的
-> `towel_fold_dataset_aug_v1` 与 v4 模型是独立实验，不计入 10/10 声明。
+> 早期 run `towel_fold_act_v2`（60 条 demo 的 `towel_fold_dataset`）是历史迭代，
+> 不是 10/10 声明里的模型；本地审计材料保留 v2/030000 的配置。
 
 ## 5. 复现流程（硬件）
 

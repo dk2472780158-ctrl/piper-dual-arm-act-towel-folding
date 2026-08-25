@@ -27,8 +27,8 @@ lerobot-record \
     left:   {type: opencv, index_or_path: /dev/camera_left,   width: 640, height: 480, fps: 30},
     middle: {type: opencv, index_or_path: /dev/camera_middle, width: 640, height: 480, fps: 30},
     right:  {type: opencv, index_or_path: /dev/camera_right,  width: 640, height: 480, fps: 30}}" \
-  --dataset.repo_id="${DATASET_REPO_ID:-local/towel_fold_dataset}" \
-  --dataset.num_episodes=60 \
+  --dataset.repo_id="${DATASET_REPO_ID:-local/towel_fold_dataset_aug_v1}" \
+  --dataset.num_episodes=120 \
   --dataset.single_task="Fold the towel with both Piper arms." \
   --display_data=true
 ```
@@ -37,8 +37,8 @@ lerobot-record \
   的 `lerobot/teleoperators/piper/`（本仓库审计材料不含该目录），`--teleop.type`
   的确切取值**待确认**；`lerobot_piper/motors/piper/piper_master.py` 是读 leader
   控制帧的只读总线实现，可作为移植参考。
-- 参考模型的训练集为 60 条 demo / 42,373 帧（见上文「数据集（已确认）」）；上面的
-  `num_episodes=60` 与之对齐，请按你的任务调整。
+- 部署模型（v4）的训练集为 **120 条 demo / 85,187 帧**（见上文「数据集（已确认）」）；
+  上面的 `num_episodes=120` 与之对齐，请按你的任务调整。
 
 ## 2. 观测 / 动作定义
 
@@ -66,13 +66,13 @@ lerobot-record \
 
 ## 5. 数据集（已确认）
 
-参考模型（checkpoint 040000，run `towel_fold_act_v2`）的训练集已从主机确认：
+部署模型（checkpoint 040000 = last，run `towel_fold_act_v4_scratch60k`）的训练集已从主机确认：
 
 | 项 | 值 |
 |---|---|
-| repo_id | `local/towel_fold_dataset`（本地数据集，无 Hub 仓库 ID） |
-| episodes | 60 |
-| frames | 42,373 |
+| repo_id | `local/towel_fold_dataset_aug_v1`（本地数据集，无 Hub 仓库 ID） |
+| episodes | 120 |
+| frames | 85,187 |
 | FPS | 30 |
 | robot_type | `piper_dual` |
 | observation.state | 28（每臂 7 电机 × 位置/力矩交错：`left_joint_1.pos/effort … right_gripper.pos/effort`） |
@@ -80,9 +80,9 @@ lerobot-record \
 | 图像 | `left` / `middle` / `right`，RGB 640×480 @ 30 fps |
 | 增强 | 关闭（`image_transforms.enable=false`） |
 
-另有 **120 条 demo** 的扩展数据集 `towel_fold_dataset_aug_v1`（85,187 帧）与后续
-**v4 模型**：属于**后续实验**，不归入 10/10 连续成功视频的声明（见
-[train_example.yaml](../configs/train_example.yaml) 中 `repo_id: local/towel_fold_dataset`）。
+早期 run `towel_fold_act_v2` 用 **60 条 demo** 的 `local/towel_fold_dataset`（42,373 帧），
+属历史迭代，**不**是 10/10 连续成功视频所用模型（见
+[train_example.yaml](../configs/train_example.yaml) 中 `repo_id: local/towel_fold_dataset_aug_v1`）。
 
 ## 6. 待确认项
 

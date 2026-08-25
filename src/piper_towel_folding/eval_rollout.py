@@ -18,6 +18,7 @@ for the 10/10 consecutive-trials video, see ``docs/deployment.md`` and
 from __future__ import annotations
 
 import argparse
+import csv
 import signal
 import sys
 import time
@@ -77,6 +78,10 @@ def parse_args() -> argparse.Namespace:
                         help="What to do on exit: `hold` keeps arms ENABLED at last pose (prevents drops); "
                              "`disable` releases both arms.")
     parser.add_argument("--execute", action="store_true", help="Actually send actions to Piper. Default is dry-run.")
+    parser.add_argument("--latency-csv", type=Path, default=Path("results/latency_results.csv"),
+                        help="Write per-metric mean/p95 latency (ms) to this CSV.")
+    parser.add_argument("--latency-warmup", type=int, default=10,
+                        help="Loops to skip before collecting latency samples.")
     return parser.parse_args()
 
 
@@ -181,6 +186,35 @@ def infer_action(policy, preprocessor, postprocessor, obs: dict[str, torch.Tenso
     return action
 
 
+def write_latency_csv(path: Path, samples: dict[str, list[float]]) -> None:
+    """Write mean/p95 latency per metric.
+
+    The sync runner measures the first three metrics on the single-process
+    path; ``chunk_encode`` / ``grpc_roundtrip`` are async-gRPC-path metrics
+    and stay empty (marked 待确认) until measured with a client-side timer.
+    """
+    path = path.expanduser()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    rows = [
+        ("policy_inference", samples["policy_inference"], "ACT forward + pre/post processors (CUDA)"),
+        ("chunk_encode", samples.get("chunk_encode", []), "async gRPC path — 待确认 (needs async client timer)"),
+        ("grpc_roundtrip", samples.get("grpc_roundtrip", []), "async gRPC path — 待确认 (needs async client timer)"),
+        ("observation_capture", samples["observation_capture"], "3 cams + 28-dim state read + tensor build"),
+        ("control_loop_period", samples["control_loop_period"], "wall time between loop iterations incl. sleep"),
+    ]
+    with open(path, "w", newline="") as fh:
+        writer = csv.writer(fh)
+        writer.writerow(["metric", "value_ms", "notes"])
+        for name, values, note in rows:
+            if values:
+                writer.writerow([f"{name}_mean", f"{float(np.mean(values)):.3f}", note])
+                writer.writerow([f"{name}_p95", f"{float(np.percentile(values, 95)):.3f}", note])
+            else:
+                writer.writerow([f"{name}_mean", "", note])
+                writer.writerow([f"{name}_p95", "", note])
+    print(f"Latency CSV written: {path}")
+
+
 def run(args: argparse.Namespace) -> None:
     global stop_requested
     stop_requested = False
@@ -204,6 +238,11 @@ def run(args: argparse.Namespace) -> None:
 
     robot: PIPERDual | None = None
     was_executing = False
+    latency_samples: dict[str, list[float]] = {
+        "observation_capture": [],
+        "policy_inference": [],
+        "control_loop_period": [],
+    }
     try:
         robot = build_robot(args, read_only=not args.execute)
         was_executing = args.execute
@@ -230,24 +269,37 @@ def run(args: argparse.Namespace) -> None:
         period = 1.0 / args.fps
         step = 0
         previous_action: np.ndarray | None = None
+        prev_loop_start: float | None = None
 
         print("\n" + ("REAL ACT rollout started. Press Ctrl+C or emergency stop to stop.\n"
                        if args.execute else "DRY-RUN started. No actions will be sent to Piper.\n"))
 
         while not stop_requested:
             loop_start = time.perf_counter()
+            steady = step >= args.latency_warmup
 
+            t_obs_start = time.perf_counter()
             raw_robot = robot.get_observation()
             images = read_all_images(robot)
             obs, state = build_policy_observation(raw_robot, images, device)
             measured_positions = state_positions(state)
+            t_obs_end = time.perf_counter()
 
             if args.execute and previous_action is not None:
                 validate_tracking_error(
                     measured_positions, previous_action, safety.max_tracking_error, safety.max_gripper_tracking_error
                 )
 
+            t_inf_start = time.perf_counter()
             action = infer_action(policy, preprocessor, postprocessor, obs, device)
+            t_inf_end = time.perf_counter()
+
+            if steady:
+                latency_samples["observation_capture"].append((t_obs_end - t_obs_start) * 1000.0)
+                latency_samples["policy_inference"].append((t_inf_end - t_inf_start) * 1000.0)
+                if prev_loop_start is not None:
+                    latency_samples["control_loop_period"].append((loop_start - prev_loop_start) * 1000.0)
+            prev_loop_start = loop_start
 
             command_reference = measured_positions if previous_action is None else previous_action
             validate_command_step(action, command_reference, safety.max_joint_step, safety.max_gripper_step)
@@ -282,6 +334,10 @@ def run(args: argparse.Namespace) -> None:
                 print("Arms remain ENABLED holding the last commanded pose. "
                       "Physically support them before any later power-off.")
             robot.disconnect()
+        if any(latency_samples.values()):
+            write_latency_csv(args.latency_csv, latency_samples)
+        else:
+            print("No latency samples collected (warmup only?) — CSV not written.")
         print("Rollout stopped.")
 
 
