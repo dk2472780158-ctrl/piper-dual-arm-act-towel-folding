@@ -22,7 +22,7 @@ dependencies = [
     "torchvision",
     "numpy",
     "lerobot",               # https://github.com/huggingface/lerobot
-    "piper-sdk",             # AgileX Piper arm SDK (see NOTICE)
+    "piper-sdk==0.6.2",      # AgileX Piper arm SDK, verified version (see NOTICE)
     "opencv-python",
     "python-dotenv",
 ]

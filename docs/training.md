@@ -53,7 +53,13 @@ lerobot-train --config configs/train_example.yaml \
   完全一致（chunk 100 / exec 50、ResNet18、dim 512、VAE 32、kl 10.0、
   optimizer_lr 1e-05、weight_decay 1e-04、lr_backbone 1e-05），且其
   `pretrained_path` 指向 `.../030000/pretrained_model` —— 即 **040000 是从
-  030000 继续训练出来的**。本节的架构与超参数表同时覆盖两个 checkpoint。
+  030000 继续训练出来的**（同 run `towel_fold_act_v2`，resume=true）。
+  本节的架构与超参数表同时覆盖两个 checkpoint。
+- **模型溯源（已确认）**：run `towel_fold_act_v2`，checkpoint 040000，target steps
+  50000，batch_size 8；训练集 `local/towel_fold_dataset`（60 条 demo / 42,373 帧 /
+  30 fps，增强关闭）；模型 SHA256
+  `ae4485689708457b5cdabf72628af5a61aa1eba3423badc9f0e49013dbe11e4c`。
+  120 条 demo 的 `towel_fold_dataset_aug_v1` 与 v4 模型是后续实验，与 10/10 视频声明无关。
 - 权重文件**不入库**，提供独立下载说明（见 README「下载」一节）。
 
 ## 6. 待确认项

@@ -28,7 +28,7 @@ lerobot-record \
     middle: {type: opencv, index_or_path: /dev/camera_middle, width: 640, height: 480, fps: 30},
     right:  {type: opencv, index_or_path: /dev/camera_right,  width: 640, height: 480, fps: 30}}" \
   --dataset.repo_id="${DATASET_REPO_ID:-local/towel_fold_dataset}" \
-  --dataset.num_episodes=30 \
+  --dataset.num_episodes=60 \
   --dataset.single_task="Fold the towel with both Piper arms." \
   --display_data=true
 ```
@@ -37,7 +37,8 @@ lerobot-record \
   的 `lerobot/teleoperators/piper/`（本仓库审计材料不含该目录），`--teleop.type`
   的确切取值**待确认**；`lerobot_piper/motors/piper/piper_master.py` 是读 leader
   控制帧的只读总线实现，可作为移植参考。
-- episode 数 / 时长请按你的任务调整；`num_episodes=30` 只是示例，不代表参考数据集。
+- 参考模型的训练集为 60 条 demo / 42,373 帧（见上文「数据集（已确认）」）；上面的
+  `num_episodes=60` 与之对齐，请按你的任务调整。
 
 ## 2. 观测 / 动作定义
 
@@ -63,9 +64,27 @@ lerobot-record \
 - 仓库不保存设备序列号；部署时通过 `.env`（`CAMERA_LEFT/MIDDLE/RIGHT`）或 udev 符号链接指向 `/dev/camera_*`。
 - 采集时需保证三路相机时间对齐（同为 30 fps，逐帧同步写入 episode）。
 
-## 5. 待确认项
+## 5. 数据集（已确认）
 
-- 数据集 episode 总数、每 episode 时长、总时长：**待确认**（原始数据集在采集主机上，`meta/info.json` 尚未导出；拿到后即可回填）。
+参考模型（checkpoint 040000，run `towel_fold_act_v2`）的训练集已从主机确认：
+
+| 项 | 值 |
+|---|---|
+| repo_id | `local/towel_fold_dataset`（本地数据集，无 Hub 仓库 ID） |
+| episodes | 60 |
+| frames | 42,373 |
+| FPS | 30 |
+| robot_type | `piper_dual` |
+| observation.state | 28（每臂 7 电机 × 位置/力矩交错：`left_joint_1.pos/effort … right_gripper.pos/effort`） |
+| action | 14（`left_joint_1.pos … left_gripper.pos, right_joint_1.pos … right_gripper.pos`） |
+| 图像 | `left` / `middle` / `right`，RGB 640×480 @ 30 fps |
+| 增强 | 关闭（`image_transforms.enable=false`） |
+
+另有 **120 条 demo** 的扩展数据集 `towel_fold_dataset_aug_v1`（85,187 帧）与后续
+**v4 模型**：属于**后续实验**，不归入 10/10 连续成功视频的声明（见
+[train_example.yaml](../configs/train_example.yaml) 中 `repo_id: local/towel_fold_dataset`）。
+
+## 6. 待确认项
+
 - leader 遥操作的 `--teleop.type` 确切取值：**待确认**（参考 fork 的 `teleoperators/piper` 不在审计材料内）。
-- 数据增强：参考运行 `image_transforms.enable=false`（关闭），若后续开启需重新评测。
 - 是否包含「失败 / 中断」demo 作为负样本：**待确认**。

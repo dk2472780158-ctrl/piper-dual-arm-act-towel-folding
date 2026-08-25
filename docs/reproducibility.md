@@ -51,6 +51,10 @@ python -m pytest tests/ -q        # 安全层 + 配置单测
 > 040000 与 030000 的配置已核对为完全一致（040000 的 `config.json` 已导出，且其
 > `pretrained_path` 指向 030000，即 040000 是 030000 的续训结果），因此上表同时
 > 覆盖部署所用的 040000 与审计材料中的 030000。
+>
+> 参考模型的训练集：`local/towel_fold_dataset`（60 条 demo / 42,373 帧 / 30 fps，
+> 增强关闭，见 [data-collection.md](data-collection.md)）。120 条 demo 的
+> `towel_fold_dataset_aug_v1` 与 v4 模型是独立实验，不计入 10/10 声明。
 
 ## 5. 复现流程（硬件）
 

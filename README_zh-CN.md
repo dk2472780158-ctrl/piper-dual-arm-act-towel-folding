@@ -50,6 +50,29 @@ ACT（Action Chunking Transformer）· LeRobot · gRPC 异步推理 · 30 Hz 实
 
 ---
 
+## 数据集与检查点
+
+连续十次评测使用的 ACT 检查点为 `towel_fold_act_v2` 训练的 **global step 040000**。
+
+策略在 **60 条真实双臂示范**上训练，共 42,373 帧、30 FPS；该次运行**关闭了图像增强**。
+
+- 机器人：双 AgileX Piper
+- 相机：三路 RGB（`left` / `middle` / `right`）
+- 状态维度：28
+- 动作维度：14
+- ACT chunk size：100
+- 训练 batch size：8
+- Piper SDK：0.6.2
+- 检查点 SHA256：`ae4485689708457b5cdabf72628af5a61aa1eba3423badc9f0e49013dbe11e4c`
+
+在一次连续录制的实验中，系统完成 10 次测试并成功 10 次（10/10 consecutive trials）。
+这是对**该次录制**的陈述，不是一般的成功率估计。
+
+> 120 条示范的 `towel_fold_dataset_aug_v1` 数据集与后续 v4 模型是**独立的后续实验**，
+> 不归入上述 10/10 视频声明的范围。
+
+---
+
 ## 系统架构
 
 ![Architecture](assets/architecture.svg)

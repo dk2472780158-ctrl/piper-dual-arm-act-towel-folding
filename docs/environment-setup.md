@@ -19,10 +19,11 @@ pip install -e ".[dev]"        # torch / lerobot / piper-sdk / opencv-python / .
 ./scripts/setup_piper_dual.sh  # 把 piper_dual 机器人类型装进 LeRobot（见 lerobot_piper/README.md）
 ```
 
-- **piper_sdk**：驱动通过 `from piper_sdk import C_PiperInterface_V2` 导入。
-  pip 安装名在不同来源不一致（`pip show piper-sdk` 在参考主机 base 环境查不到），
-  以你训练/部署环境的 `pip list | grep -i piper` 为准。**待确认**：参考主机上
-  piper_sdk 的确切安装来源（pip 包名 / 本地 wheel / git）。
+- **piper-sdk 0.6.2（已确认）**：pip 包名 `piper-sdk`，Python 导入名 `piper_sdk`，
+  核心接口 `from piper_sdk import C_PiperInterface_V2`。代码按 SDK 0.6.2 的接口与
+  硬件限位设计（`start_sdk_joint_limit=True` / `start_sdk_gripper_limit=True`）。
+  它安装在 conda 环境 `lerobot_v30` 里（base 环境的 `pip show piper-sdk` 查不到是
+  因为不在 base）。`pyproject.toml` 已固定 `piper-sdk==0.6.2`。
 - **GPU**：参考主机为 Driver 595.84、CUDA 13.2（`nvidia-smi` 头部可见）。
   显卡型号与显存未记录在审计材料中，**待确认**（可用 `nvidia-smi -L` 查询后回填）。
 

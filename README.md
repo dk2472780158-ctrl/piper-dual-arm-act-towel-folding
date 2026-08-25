@@ -48,6 +48,33 @@ Per-trial timestamps and stage flags: `results/consecutive_10_trials.csv` · ful
 
 ---
 
+## Dataset and checkpoint
+
+The consecutive-trial evaluation uses the ACT checkpoint at global step
+`040000` from the `towel_fold_act_v2` run.
+
+The policy was trained on 60 real dual-arm demonstrations containing 42,373
+frames at 30 FPS. Image augmentation was disabled for this run.
+
+- Robot: dual AgileX Piper
+- Cameras: three RGB views (`left`, `middle`, `right`)
+- State dimension: 28
+- Action dimension: 14
+- ACT chunk size: 100
+- Training batch size: 8
+- Piper SDK: 0.6.2
+- Checkpoint SHA256: `ae4485689708457b5cdabf72628af5a61aa1eba3423badc9f0e49013dbe11e4c`
+
+In one continuous recording, the system completed 10 tests and succeeded in
+all 10 (`10/10 consecutive trials`). This is a result for that recording,
+not a general success-rate estimate.
+
+> The 120-demonstration `towel_fold_dataset_aug_v1` dataset and the follow-up
+> v4 model are separate future experiments and are **not** part of the 10/10
+> recording claim above.
+
+---
+
 ## Architecture
 
 ![Architecture](assets/architecture.svg)
