@@ -143,8 +143,8 @@ POLICY_CHECKPOINT=/path/to/pretrained_model ./scripts/dry_run.sh
 |---|---|---|
 | 双臂 | 2 × AgileX Piper（六自由度 + 夹爪） | 左臂 `can1`，右臂 `can0` |
 | 相机 | 3 × 640×480 @ 30 fps | `/dev/camera_{left,middle,right}` udev 符号链接 |
-| 主机 | Ubuntu + NVIDIA GPU | 训练 + CUDA 推理 |
-| 驱动 / CUDA | 595.84 / 13.2（已确认） | 显卡型号待确认 |
+| 主机 | Ubuntu + NVIDIA A10（24 GB） | 训练 + CUDA 推理 |
+| 驱动 / CUDA | 595.84 / 13.2（已确认） | — |
 
 ```bash
 # 每台机器一次：把 piper_dual 机器人类型装进 LeRobot

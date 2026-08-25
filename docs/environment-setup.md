@@ -24,8 +24,7 @@ pip install -e ".[dev]"        # torch / lerobot / piper-sdk / opencv-python / .
   硬件限位设计（`start_sdk_joint_limit=True` / `start_sdk_gripper_limit=True`）。
   它安装在 conda 环境 `lerobot_v30` 里（base 环境的 `pip show piper-sdk` 查不到是
   因为不在 base）。`pyproject.toml` 已固定 `piper-sdk==0.6.2`。
-- **GPU**：参考主机为 Driver 595.84、CUDA 13.2（`nvidia-smi` 头部可见）。
-  显卡型号与显存未记录在审计材料中，**待确认**（可用 `nvidia-smi -L` 查询后回填）。
+- **GPU**：参考主机为 **NVIDIA A10（24 GB）**，Driver 595.84、CUDA 13.2（已确认）。
 
 ## 3. CAN 总线
 

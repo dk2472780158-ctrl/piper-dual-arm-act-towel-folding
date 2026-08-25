@@ -15,8 +15,8 @@ pip install -e ".[dev]"            # torch / lerobot / piper-sdk / opencv-python
 
 依赖：Python ≥ 3.10、torch、lerobot（Apache 2.0）、piper-sdk、opencv-python、python-dotenv、pyyaml；测试需要 pytest。
 
-> 训练 / CUDA 推理需要 NVIDIA GPU。参考部署主机的驱动与 CUDA 已确认（Driver 595.84 / CUDA 13.2），
-> 显卡型号与显存**待确认**。无 GPU 也能跑安全层单测与 dry-run。
+> 训练 / CUDA 推理需要 NVIDIA GPU。参考部署主机为 **NVIDIA A10（24 GB）**，
+> Driver 595.84 / CUDA 13.2（已确认）。无 GPU 也能跑安全层单测与 dry-run。
 
 ## 2. 首次验证（无硬件）
 

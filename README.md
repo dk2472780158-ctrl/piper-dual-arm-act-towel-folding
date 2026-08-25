@@ -148,8 +148,8 @@ Real execution is **never the default**: it requires `--execute`, typing
 |---|---|---|
 | Arms | 2 × AgileX Piper (6-DoF + gripper) | left on `can1`, right on `can0` |
 | Cameras | 3 × 640×480 @ 30 fps | `/dev/camera_{left,middle,right}` udev symlinks |
-| Host | Ubuntu + NVIDIA GPU | training + CUDA inference |
-| Driver / CUDA | 595.84 / 13.2 (confirmed) | GPU model TBC |
+| Host | Ubuntu + NVIDIA A10 (24 GB) | training + CUDA inference |
+| Driver / CUDA | 595.84 / 13.2 (confirmed) | — |
 
 ```bash
 # one-time, per machine: install the piper_dual robot type into LeRobot

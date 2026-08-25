@@ -64,8 +64,8 @@ lerobot-train --config configs/train_example.yaml \
 
 ## 6. 待确认项
 
-- GPU 型号 / 显存 / 单步耗时 / 训练墙钟时间：**待确认**（审计材料未含日志；部署主机
-  `nvidia-smi` 头部为 Driver 595.84 / CUDA 13.2，型号行未记录）。
+- GPU：**NVIDIA A10（24 GB），Driver 595.84 / CUDA 13.2，已确认**。单步耗时 /
+  训练墙钟时间：**待确认**（审计材料未含日志）。
 - 是否进行过消融 / 对照实验：**待确认**。
 
 ## 7. 复现要点
