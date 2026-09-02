@@ -245,6 +245,15 @@ DATASET_ROOT="$DATASET_ROOT" ./scripts/train_act.sh
 7. 不允许未经确认向 GitHub 推送。
 8. 所有修改先保存在新的发布目录中，完成审查后再由我决定是否上传。
 
+## 相关项目
+
+本工作的 **SmolVLA 演进版** —— 同一个 ACT 安全基线,在其上叠加连续 SmolVLA authority 混合 ——
+在另一个独立仓库:
+
+**[Dual-Arm SmolVLA Towel Folding](https://github.com/dk2472780158-ctrl/piper-dual-arm-smolvla-towel-folding)** —
+保留本仓库发布的 ACT checkpoint(`towel_fold_act_v4_040000`)作为安全基线(夹爪始终由它持有),
+再叠加一层 SmolVLA 塑形策略的连续 authority 混合。
+
 ## 致谢与许可
 
 - LeRobot / ACTPolicy — Apache 2.0，基于 Tony Z. Zhao 的 ALOHA 工作。见 `NOTICE` 与 `CITATION.cff`。

@@ -258,6 +258,15 @@ auto-disabled, to prevent dropping the load).
 7. No unconfirmed push to GitHub.
 8. All changes are staged in the release directory and reviewed before upload.
 
+## Related project
+
+The **SmolVLA follow-up** of this work — the same ACT safety base with continuous SmolVLA
+authority blending on top — lives in a separate repository:
+
+**[Dual-Arm SmolVLA Towel Folding](https://github.com/dk2472780158-ctrl/piper-dual-arm-smolvla-towel-folding)** —
+keeps the ACT checkpoint released here (`towel_fold_act_v4_040000`) as its safety base (which
+always owns the gripper) and adds a SmolVLA shaping policy through a continuous authority blend.
+
 ## Acknowledgements & license
 
 - LeRobot / ACTPolicy — Apache 2.0, based on Tony Z. Zhao's ALOHA work. See `NOTICE` and `CITATION.cff`.
