@@ -12,6 +12,8 @@ ACT（Action Chunking Transformer）· LeRobot · gRPC 异步推理 · 30 Hz 实
 
 ---
 
+> **相关项目**：同双 Piper 平台、在此 ACT 基线之上叠加 **SmolVLA（VLA）连续塑形**的后续项目 —— [piper-dual-arm-smolvla-towel-folding](https://github.com/dk2472780158-ctrl/piper-dual-arm-smolvla-towel-folding)。
+
 ## 这个项目展示什么
 
 一套跑在**两台真实机械臂**上的叠毛巾技能，端到端闭环：

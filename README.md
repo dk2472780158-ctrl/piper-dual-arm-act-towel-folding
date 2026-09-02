@@ -12,6 +12,8 @@ ACT (Action Chunking Transformer) · LeRobot · gRPC async inference · 30 Hz re
 
 ---
 
+> **Related project**: a vision-language-action (VLA) follow-up that layers **SmolVLA** shaping on top of this ACT baseline on the same dual-Piper platform — [piper-dual-arm-smolvla-towel-folding](https://github.com/dk2472780158-ctrl/piper-dual-arm-smolvla-towel-folding).
+
 ## What this project shows
 
 A real towel-folding skill that runs on two physical AgileX Piper arms, end to end:
